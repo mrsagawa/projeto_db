@@ -10,300 +10,389 @@ TODO!
 
 ## 3. Entidades e Seus Atributos
 
+## 3. Entidades e Seus Atributos
+
 ### 3.1 Entidade: LINHA
 
 #### Descrição
 Representa as linhas de transporte público disponíveis na rede.
 
 #### Atributos
-- **id_linha** (Chave primária): Identificador único da linha
-- **nome**: Nome ou número da linha
-- **status**: Estado atual da linha (ativa, desativada, em manutenção)
-- **data_inauguracao**: Data em que a linha começou a operar
-- **extensao_total**: Comprimento total da linha em quilômetros
-- **tarifa**: Valor da passagem
+- **cod_linha** (Chave primária): Identificador único da linha.
+- **nome_linha**: Nome ou número da linha.
+- **data_criacao**: Data em que a linha começou a operar.
 
-### 3.2 Entidade: PONTO
+
+### 3.2 Entidade: ROTA
 
 #### Descrição
-Representa as estações, terminais e pontos de parada da rede de transporte.
+Representa o trajeto específico dentro de uma linha, que pode incluir pontos, trechos e um itinerário definido.
 
 #### Atributos
-- **id_ponto** (Chave primária): Identificador único do ponto
-- **nome**: Nome do ponto
-- **tipo**: Classificação (terminal, estação, ponto de parada)
-- **status**: Estado atual (operacional, em manutenção, desativada)
-- **latitude**: Coordenada geográfica (latitude)
-- **longitude**: Coordenada geográfica (longitude)
-- **endereco**: Endereço completo
-- **acessibilidade**: Indica se possui recursos de acessibilidade (booleano)
+- **cod_rota** (Chave primária): Identificador único da rota.
+- **texto_letreiro**: Texto exibido no letreiro, indicando o destino ou nome da rota.
 
-### Entidade: TERMINAL
+### 3.3 Entidade: TRECHO
 
 #### Descrição
-Representa as estações, terminais e pontos de parada da rede de transporte.
+Define um segmento específico de rota entre dois ou mais pontos.
 
 #### Atributos
-- **id_terminal** (Chave primária): Identificador único de terminal
-- **nome**: Nome do terminal
-- **opening hours**:
-- **closing hours**: 
-
-### TERMINAL_PONTO:
-#### Descrição
-
-#### Atributos
-- **id_terminal** (Chave entrangeira): Identificador único de terminal
-- **ids_pontos**: (chave primaria)
+- **cod_trecho** (Chave primária, se for necessário identificar unicamente cada trecho): Identificador único do trecho.
+- **comprimento**: Extensão do trecho (em km ou metros).
+- **tempo_medio**: Tempo médio de percurso.
+- **geometria**: Dados espaciais ou sequência de coordenadas do trecho.
 
 
-<!-- #### Atributos
-- **id_trecho** (Chave primária): Identificador único do trecho
-- **distancia**: Distância em quilômetros
-- **tempo_medio**: Tempo médio necessário para percorrer o trecho
-- **estado_conservacao**: Condição atual do trecho
-- **data_ultima_manutencao**: Data da última manutenção realizada
-- **tipo_via**: Característica da via (exclusiva, compartilhada, etc.) -->
-
-### 3.3 Entidade: ROTA
+### 3.4 Entidade: PONTO
 
 #### Descrição
-Representa o conjunto ordenado de estações que forma um itinerário específico.
+Representa locais de parada ou referência em uma rota, como pontos de ônibus ou cruzamentos.
 
 #### Atributos
-- **id_rota** (Chave primária): Identificador único da rota
-- **direcao**: Sentido da rota (ida/volta)
-- **horario_inicio_operacao**: Horário da primeira viagem
-- **horario_fim_operacao**: Horário da última viagem
-- **frequencia**: Intervalo entre veículos (em minutos)
-- **dias_operacao**: Dias da semana em que a rota opera
+- **cod_ponto** (Chave primária): Identificador único do ponto.
+- **nome**: Nome descritivo do ponto (ex.: “Terminal Central”).
+- **latitude** (opcional): Latitude do ponto.
+- **longitude** (opcional): Longitude do ponto.
 
-### 3.5 Entidade: ONIBUS
+
+### 3.5 Entidade: PARTIDA_PREVISTA
 
 #### Descrição
-Representa os veículos utilizados para o transporte de passageiros.
+Armazena os horários programados (dia e hora) em que as viagens devem ocorrer.
 
 #### Atributos
-- **id_veiculo** (Chave primária): Identificador único do veículo
-- **modelo**: Modelo/fabricante
-- **placa**: Placa ou registro oficial
-- **capacidade**: Número máximo de passageiros
-- **ano_fabricacao**: Ano em que foi fabricado
-- **data_aquisicao**: Data em que foi adquirido pela empresa
-- **estado**: Condição atual (ativo, em manutenção, desativado)
-- **quilometragem**: Quilometragem acumulada
-- **tipo_combustivel**: Tipo de energia utilizada
-- **acessibilidade**: Indica se possui recursos de acessibilidade (booleano)
-- **equipamentos**: Lista de equipamentos disponíveis
+- **cod_partida** (Chave primária, se necessário): Identificador único da partida prevista.
+- **dia_semana**: Dia da semana (ex.: Segunda, Terça) ou codificação (0–6).
+- **horario_previsto**: Horário programado de saída.
 
-### 3.6 Entidade: OPERADOR
+
+### 3.6 Entidade: VIAGEM
 
 #### Descrição
-Representa os funcionários que operam os veículos e serviços.
+Registra a realização efetiva de uma rota em um horário específico, associada a um motorista e a um veículo.
 
 #### Atributos
-- **id_operador** (Chave primária): Identificador único do operador
-- **nome**: Nome completo
-- **cargo**: Função exercida (motorista, cobrador, etc.)
-- **registro**: Número de registro profissional
-- **data_admissao**: Data de contratação
-- **qualificacoes**: Certificações e habilitações
-- **status**: Situação atual (ativo, afastado, etc.)
+- **cod_viagem** (Chave primária): Identificador único da viagem.
+- **data_hora**: Momento de início (ou registro) da viagem.
 
-### 3.7 Entidade: MANUTENCAO
+
+### 3.7 Entidade: OCORRÊNCIA
 
 #### Descrição
-Representa os serviços de manutenção realizados em veículos ou infraestrutura.
+Registra incidentes ou eventos que ocorreram durante uma viagem (como atrasos, acidentes, problemas mecânicos etc.).
 
 #### Atributos
-- **id_manutencao** (Chave primária): Identificador único da manutenção
-- **tipo**: Classificação (preventiva, corretiva)
-- **data_inicio**: Data de início do serviço
-- **data_conclusao**: Data de finalização do serviço
-- **descricao**: Detalhamento do serviço realizado
-- **custo**: Valor gasto
-- **responsavel**: Técnico responsável
-- **pecas_substituidas**: Lista de componentes substituídos
-- **status**: Estado atual (agendada, em andamento, concluída)
+- **cod_ocorrencia** (Chave primária): Identificador único da ocorrência.
+- **data_hora**: Data e hora do registro do evento.
+- **descricao**: Detalhes sobre a ocorrência.
+- **tipo**: Classificação da ocorrência (ex.: “pane mecânica”, “acidente”, etc.).
 
-### 3.8 Entidade: VIAGEM
+
+### 3.8 Entidade: USUÁRIO
 
 #### Descrição
-Representa cada viagem individual realizada por um veículo em uma rota.
+Representa o passageiro ou cliente que utiliza o sistema de transporte.
 
 #### Atributos
-- **id_viagem** (Chave primária): Identificador único da viagem
-- **horario_prog_partida**: Horário programado para início
-- **horario_real_partida**: Horário real de início
-- **horario_prog_chegada**: Horário programado para conclusão
-- **horario_real_chegada**: Horário real de conclusão
-- **status**: Estado da viagem (programada, em andamento, concluída, cancelada)
-- **num_passageiros**: Quantidade de passageiros transportados
+- **cpf** (Chave primária): CPF do usuário (identificador único).
+- **nome**: Nome completo do usuário.
+- **data_nascimento**: Data de nascimento do usuário.
+- **genero**: Informação de gênero (opcional).
 
-### 3.9 Entidade: OCORRENCIA
+
+### 3.9 Entidade: BILHETE
 
 #### Descrição
-Representa eventos não planejados que afetam a operação normal.
+Representa o cartão ou passe utilizado pelo usuário para pagar a tarifa de transporte.
 
 #### Atributos
-- **id_ocorrencia** (Chave primária): Identificador único da ocorrência
-- **tipo**: Categoria (atraso, quebra, acidente, etc.)
-- **data_hora**: Momento em que aconteceu
-- **localizacao**: Local do evento
-- **descricao**: Detalhamento
-- **gravidade**: Nível de severidade
-- **solucao**: Medidas tomadas
-- **tempo_resolucao**: Tempo necessário para resolver
-- **impacto**: Efeito na operação
+- **cod_cartao** (Chave primária): Identificador único do bilhete/cartão.
+- **saldo**: Saldo monetário atual disponível no cartão.
+- **tipo_cartao**: Tipo do bilhete (ex.: Estudante, Comum, Idoso, etc.).
 
-### 3.10 Entidade: DEMANDA
+
+### 3.10 Entidade: ENTRADA
 
 #### Descrição
-Representa os dados de fluxo de passageiros.
+Registra o ato de entrada do passageiro no veículo ou terminal, incluindo valor da tarifa cobrada e horário.
 
 #### Atributos
-- **id_demanda** (Chave primária): Identificador único do registro de demanda
-- **data**: Data da coleta
-- **faixa_horaria**: Período específico
-- **volume_passageiros**: Quantidade de passageiros
-- **tipo_dia**: Classificação (útil, sábado, domingo, feriado)
-- **taxa_ocupacao**: Percentual de ocupação
-- **origem_dados**: Fonte das informações
+- **cod_entrada** (Chave primária, se necessário): Identificador único da entrada.
+- **tarifa**: Valor cobrado no momento da entrada.
+- **horario**: Momento em que o usuário passou pela catraca ou registrou a entrada.
 
-### 3.11 Entidade: BILHETE
+
+### 3.11 Entidade: COBRADOR
 
 #### Descrição
-Representa os bilhetes ou passagens utilizados pelos passageiros.
+Subtipo de Operador responsável por receber pagamento de passagens ou validar bilhetes.
 
 #### Atributos
-- **id_bilhete** (Chave primária): Identificador único do bilhete
-- **tipo**: Categoria (unitário, integração, mensal, etc.)
-- **data_hora_utilizacao**: Momento em que foi utilizado
-- **valor**: Preço pago
-- **id_usuario**: Identificador do usuário (quando disponível)
+- *Herdados de OPERADOR*: cpf, nome, salario.
+- *Não possui atributos próprios além dos herdados* (conforme o diagrama atual).
+
+### 3.12 Entidade: MOTORISTA
+
+#### Descrição
+Subtipo de Operador responsável por conduzir o veículo no percurso definido.
+
+#### Atributos
+- *Herdados de OPERADOR*: cpf, nome, salario.
+- **cod_habilitacao** (ou num_cnh): Número de registro da habilitação.
+
+### 3.13 Entidade: TÉCNICO
+
+#### Descrição
+Subtipo de Funcionário incumbido das atividades de manutenção de veículos.
+
+#### Atributos
+- *Herdados de FUNCIONÁRIO*: cpf, nome, salario.
+- *Não possui atributos próprios além dos herdados*.
+
+
+### 3.14 Entidade: OPERADOR
+
+#### Descrição
+Subtipo de Funcionário que atua diretamente na operação do sistema, podendo ser motorista ou cobrador.
+
+#### Atributos
+- *Herdados de FUNCIONÁRIO*: cpf, nome, salario.
+- *Não possui atributos próprios além dos herdados*.
+
+
+### 3.15 Entidade: FUNCIONÁRIO
+
+#### Descrição
+Representa o colaborador vinculado à empresa de transporte, podendo ter diferentes funções.
+
+#### Atributos
+- **cpf** (Chave primária): CPF do funcionário.
+- **nome**: Nome completo do funcionário.
+- **salario**: Valor de salário do funcionário.
+
+
+### 3.16 Entidade: ESCALA
+
+#### Descrição
+Define o horário de trabalho de um funcionário, incluindo hora de início e hora de término.
+
+#### Atributos
+- **cod_escala** (Chave primária, se necessário): Identificador único da escala.
+- **hora_inicio**: Horário em que a escala começa.
+- **hora_fim**: Horário em que a escala termina.
+
+
+### 3.17 Entidade: EMPRESA
+
+#### Descrição
+Representa a companhia que gerencia e contrata os funcionários para o sistema de transporte.
+
+#### Atributos
+- **cnpj** (Chave primária): Identificador único da empresa.
+- **nome**: Nome legal da empresa.
+
+
+### 3.18 Entidade: MANUTENÇÃO
+
+#### Descrição
+Registra serviços de reparo ou revisão feitos nos veículos.
+
+#### Atributos
+- **cod_servico** (Chave primária): Identificador único da manutenção/serviço.
+- **data**: Data em que a manutenção ocorreu.
+- **descricao**: Detalhes sobre o tipo de manutenção realizada.
+- **latitude** (opcional): Localização do serviço (quando aplicável).
+- **longitude** (opcional): Localização do serviço (quando aplicável).
+
+
+### 3.19 Entidade: VEÍCULO
+
+#### Descrição
+Representa o veículo utilizado para prestar serviço de transporte, como ônibus ou vans.
+
+#### Atributos
+- **cod_veiculo** (Chave primária): Identificador único do veículo.
+- **placa**: Placa de identificação.
+- **data_inicio_operacao**: Data em que o veículo começou a operar.
+- **latitude** (opcional): Localização atual do veículo.
+- **longitude** (opcional): Localização atual do veículo.
+
+
+### 3.20 Entidade: MODELO
+
+#### Descrição
+Representa o modelo do veículo, incluindo informações de capacidade e fabricante.
+
+#### Atributos
+- **nome** (Chave primária ou não, dependendo da modelagem): Nome do modelo.
+- **tipo**: Tipo do veículo (ex.: ônibus urbano, micro-ônibus, elétrico, etc.).
+- **fabricante**: Fabricante do veículo.
+- **capacidade**: Capacidade de transporte (número de passageiros).
+
+
+### 3.21 Entidade: GARAGEM
+
+#### Descrição
+Local onde os veículos são estacionados, reabastecidos e mantidos.
+
+#### Atributos
+- **codigo** (Chave primária): Identificador único da garagem.
+- **estoque_diesel**: Quantidade de diesel disponível (quando aplicável).
+- **num_eletropostos**: Quantidade de pontos de recarga elétrica.
+- **capacidade**: Capacidade máxima de veículos.
+- **logradouro**: Nome da rua ou avenida.
+- **numero**: Número do endereço.
+- **cidade**: Município onde a garagem se localiza.
+- **cep**: Código de Endereçamento Postal da localização.
 
 
 ## 4. Relacionamentos
 
-### 4.1 Relacionamento: COMPOSTA_POR (entre LINHA e ROTA)
-- **Cardinalidade**: 1:N (Uma linha pode ter múltiplas rotas, mas cada rota pertence a exatamente uma linha)
+### 4.1 Relacionamento: CONTRATA (entre EMPRESA e FUNCIONÁRIO)
+- **Cardinalidade**: 1:N  
+  - Uma EMPRESA contrata vários FUNCIONÁRIOS (1 para EMPRESA, N para FUNCIONÁRIO).  
+  - Cada FUNCIONÁRIO é contratado por apenas uma EMPRESA.
 - **Atributos**: Não possui
 
-### 4.2 Relacionamento: PASSA_POR (entre ROTA e ESTACAO)
-- **Cardinalidade**: N:M (Uma rota passa por várias estações, e uma estação pode pertencer a várias rotas)
-- **Atributos**:
-  - **ordem**: Posição da estação na sequência da rota
-  - **tempo_parada**: Tempo médio de parada na estação
 
-### 4.3 Relacionamento: CONECTA (entre TRECHO e ESTACAO)
-- **Cardinalidade**: N:M (Um trecho conecta duas estações, e uma estação pode estar conectada a vários trechos)
-- **Atributos**: 
-  - **tipo_conexao**: Natureza da conexão (direta, baldeação)
-
-### 4.4 Relacionamento: REALIZA (entre VEICULO e VIAGEM)
-- **Cardinalidade**: 1:N (Um veículo pode realizar múltiplas viagens, mas cada viagem é realizada por exatamente um veículo)
+### 4.2 Relacionamento: É CUMPRIDA POR (entre ESCALA e FUNCIONÁRIO)
+- **Cardinalidade**: M:N <!-- discutir -->  
+  - Uma ESCALA pode ser cumprida por vários FUNCIONÁRIOS, e um FUNCIONÁRIO pode cumprir diversas escalas (dependendo da modelagem exata).
 - **Atributos**: Não possui
 
-### 4.5 Relacionamento: EXECUTA (entre OPERADOR e VIAGEM)
-- **Cardinalidade**: 1:N (Um operador pode executar múltiplas viagens, mas cada viagem é executada por exatamente um operador)
+
+### 4.3 Relacionamento: É FEITA EM (entre TÉCNICO e MANUTENÇÃO)
+- **Cardinalidade**: M:N  
+  - Um TÉCNICO pode realizar várias MANUTENÇÕES.  
+  - Uma MANUTÊNÇÃO pode ser feita por vários TÉCNICOS.
 - **Atributos**: Não possui
 
-### 4.6 Relacionamento: SEGUE (entre VIAGEM e ROTA)
-- **Cardinalidade**: N:1 (Múltiplas viagens podem seguir a mesma rota, e cada viagem segue exatamente uma rota)
+
+### 4.4 Relacionamento: POSSUI (entre VEÍCULO e MODELO)
+- **Cardinalidade**: N:1  
+  - Vários VEÍCULOS podem ter o mesmo MODELO.  
+  - Cada VEÍCULO possui exatamente um MODELO.
 - **Atributos**: Não possui
 
-### 4.7 Relacionamento: REGISTRA (entre VIAGEM e OCORRENCIA)
-- **Cardinalidade**: 1:N (Uma viagem pode registrar múltiplas ocorrências, e cada ocorrência está associada a exatamente uma viagem)
+
+### 4.5 Relacionamento: ESTACIONA EM (entre VEÍCULO e GARAGEM)
+- **Cardinalidade**: N:1  
+  - Vários VEÍCULOS podem estar estacionados em uma GARAGEM.  
+  - Cada VEÍCULO se estaciona em uma única GARAGEM.
 - **Atributos**: Não possui
 
-### 4.8 Relacionamento: RECEBE (entre VEICULO e MANUTENCAO)
-- **Cardinalidade**: 1:N (Um veículo pode receber múltiplas manutenções, e cada manutenção é realizada em exatamente um veículo)
+
+### 4.6 Relacionamento: SEGUE (entre VEÍCULO e ROTA)
+- **Cardinalidade**: M:N (presumido)  
+  - Um VEÍCULO pode seguir diferentes ROTAS ao longo do dia.  
+  - Uma ROTA pode ser seguida por vários VEÍCULOS.
 - **Atributos**: Não possui
 
-### 4.9 Relacionamento: POSSUI (entre ESTACAO e MANUTENCAO)
-- **Cardinalidade**: 1:N (Uma estação pode receber múltiplas manutenções, e cada manutenção é realizada em exatamente uma estação)
+
+### 4.7 Relacionamento: COMPÕE (entre LINHA e ROTA)
+- **Cardinalidade**: 1:N <!-- discutir -->  
+  - Uma LINHA pode ter múltiplas ROTAS.  
+  - Cada ROTA pertence a exatamente uma LINHA.
 - **Atributos**: Não possui
 
-### 4.10 Relacionamento: COLETA (entre LINHA e DEMANDA)
-- **Cardinalidade**: 1:N (Uma linha pode ter múltiplos registros de demanda, e cada registro pertence a exatamente uma linha)
+
+### 4.8 Relacionamento: PERCORRE (entre ROTA e TRECHO)
+- **Cardinalidade**: M:N
+  - Uma ROTA pode ser formada por vários TRECHOS.  
+  - Um TRECHO pode ser compartilhado entre rotas distintas.  
+- **Atributos**: Pode haver atributo de “ordem” se cada trecho tiver posição na rota <!-- discutir -->  
+
+
+### 4.9 Relacionamento: DEFINE (entre TRECHO e PONTO)
+- **Cardinalidade**: 2:N  <!-- discutir 2:N ou M:2 -->  
+  - Um TRECHO corresponde a unicamente dois pontos.  
+  - Um PONTO pode fazer parte de vários TRECHOS.
 - **Atributos**: Não possui
 
-### 4.11 Relacionamento: MONITORA (entre ESTACAO e DEMANDA)
-- **Cardinalidade**: 1:N (Uma estação pode ter múltiplos registros de demanda, e cada registro pertence a exatamente uma estação)
+
+### 4.10 Relacionamento: PERTENCE A (entre PARTIDA_PREVISTA e ROTA)
+- **Cardinalidade**: N:1  <!-- discutir -->  
+  - Diversas PARTIDAS_PREVISTAS podem pertencer a uma mesma ROTA (ou linha/itinerário específico).  
+  - Cada PARTIDA_PREVISTA refere-se a apenas uma ROTA.
 - **Atributos**: Não possui
 
-### 4.12 Relacionamento: UTILIZA (entre BILHETE e VIAGEM)
-- **Cardinalidade**: N:M (Um bilhete pode ser utilizado em várias viagens [integração], e uma viagem pode ter múltiplos bilhetes)
-- **Atributos**: 
-  - **timestamp_utilizacao**: Momento exato da utilização
-  - **estacao_entrada**: Estação onde o bilhete foi validado
-  - **estacao_saida**: Estação onde o passageiro saiu (quando aplicável)
 
-### 4.13 Relacionamento: PROPOE (entre PROJETO_EXPANSAO e LINHA)
-- **Cardinalidade**: 1:N (Um projeto pode propor múltiplas linhas novas, e cada proposta de linha está associada a exatamente um projeto)
-- **Atributos**: 
-  - **impacto_estimado**: Efeito previsto na rede existente
-  - **prioridade**: Nível de importância da linha no projeto
+### 4.11 Relacionamento: CUMPRE (entre VIAGEM e PARTIDA_PREVISTA)
+- **Cardinalidade**: N:1  
+  - Várias VIAGENS (em diferentes datas) podem cumprir a mesma PARTIDA_PREVISTA (horário fixo).  
+  - Cada VIAGEM cumpre (corresponde a) uma única PARTIDA_PREVISTA.
+- **Atributos**: Não possui
 
-### 4.14 Relacionamento: ANALISA (entre SIMULACAO e PROJETO_EXPANSAO)
-- **Cardinalidade**: N:1 (Múltiplas simulações podem analisar o mesmo projeto, e cada simulação está associada a exatamente um projeto)
-- **Atributos**: 
-  - **cenario**: Descrição do cenário simulado
-  - **confiabilidade**: Nível de confiança dos resultados
+
+### 4.12 Relacionamento: FAZ (entre MOTORISTA e VIAGEM)
+- **Cardinalidade**: 1:N  
+  - Um MOTORISTA pode fazer várias VIAGENS (em momentos ou dias distintos).  
+  - Cada VIAGEM é feita por exatamente um MOTORISTA.
+- **Atributos**: Não possui
+
+
+### 4.13 Relacionamento: SOFRE (entre VIAGEM e OCORRÊNCIA)
+- **Cardinalidade**: 1:N  
+  - Uma VIAGEM pode ter várias OCORRÊNCIAS (incidentes, eventos).  
+  - Cada OCORRÊNCIA está associada a uma única VIAGEM.
+- **Atributos**: Não possui
+
+
+### 4.14 Relacionamento: TEM (entre USUÁRIO e BILHETE) <!-- discutir Sobre cobrador (pq motorista ou tecnico tbm n poderiam ter bilhete?) -->  
+- **Cardinalidade**: 1:N  
+  - Um USUÁRIO pode ter vários BILHETES (cartões).  <!-- discutir -->  
+  - Cada BILHETE pertence a um único USUÁRIO.
+- **Atributos**: Não possui
+
+
+### 4.15 Relacionamento: É USADO EM (entre BILHETE e ENTRADA)
+- **Cardinalidade**: 1:N  
+  - Um BILHETE pode ser utilizado muitas vezes, gerando várias ENTRADAS (passagens).  
+  - Cada ENTRADA (momento de passagem) está vinculada a exatamente um BILHETE.
+- **Atributos**: Não possui
 
 ## 5. Especializações e Generalizações
 
-### 5.1 Generalização: ESTACAO (Superclasse)
-- **Especializações**: 
-  - **TERMINAL** (Disjoint): Estação maior com múltiplas linhas e estrutura completa
-    - Atributos adicionais: 
-      - **num_plataformas**: Quantidade de plataformas
-      - **area_total**: Área em metros quadrados
-      - **servicos_disponiveis**: Lista de serviços oferecidos
-  - **PONTO_INTERMEDIARIO** (Disjoint): Parada comum ao longo da linha
-    - Atributos adicionais:
-      - **tipo_abrigo**: Tipo de estrutura (coberto, parcial, sem abrigo)
-      - **sinalizacao**: Tipo de sinalização presente
+### 5.1 Generalização: FUNCIONÁRIO (Superclasse)
+- **Especializações**:  
+  - **TÉCNICO** (Disjoint): Responsável por realizar manutenções  
+    - **Atributos adicionais**: Não possui (herda os de FUNCIONÁRIO)  
+  - **OPERADOR** (Disjoint): Atua na operação de veículos e cobranças  
+    - **Atributos adicionais**: Não possui (herda os de FUNCIONÁRIO)
 
-### 5.2 Generalização: VEICULO (Superclasse)
-- **Especializações**:
-  - **ONIBUS** (Disjoint): Veículo rodoviário
-    - Atributos adicionais:
-      - **comprimento**: Tamanho do veículo
-      - **num_portas**: Quantidade de portas
-      - **articulado**: Indica se é articulado (booleano)
-  - **VAGAO** (Disjoint): Veículo ferroviário
-    - Atributos adicionais:
-      - **potencia**: Capacidade do motor
-      - **sistema_tracao**: Tipo de tecnologia
-      - **capacidade_pe**: Número de passageiros em pé
-      - **capacidade_sentado**: Número de passageiros sentados
 
-### 5.3 Generalização: OPERADOR (Superclasse)
-- **Especializações**:
-  - **MOTORISTA** (Disjoint): Conduz veículos rodoviários
-    - Atributos adicionais:
-      - **num_cnh**: Número da Carteira Nacional de Habilitação
-      - **categoria_cnh**: Categoria da habilitação
-      - **validade_cnh**: Data de vencimento da habilitação
-  - **CONDUTOR_TREM** (Disjoint): Opera veículos ferroviários
-    - Atributos adicionais:
-      - **certificacao**: Tipo de certificação técnica
-      - **horas_treinamento**: Quantidade de horas de treinamento
+### 5.2 Generalização: OPERADOR (Superclasse)
+- **Especializações**:  
+  - **COBRADOR** (Overlap, se puder ser também motorista, ou Disjoint, se não puder): Atua na cobrança de passagens  
+    - **Atributos adicionais**: Não possui (herda os de OPERADOR)  
+  - **MOTORISTA** (Overlap ou Disjoint, dependendo do modelo): Conduz veículos de transporte  
+    - **Atributos adicionais**:  
+      - **cod_habilitacao**: Código/registro da habilitação (CNH)
 
 ## 6. Atributos Multivalorados e Compostos
 
 ### 6.1 Atributos Multivalorados
-- **LINHA.tipos_pagamento**: Formas de pagamento aceitas
-- **ESTACAO.servicos**: Serviços disponíveis na estação
-- **VEICULO.equipamentos**: Lista de equipamentos presentes
-- **OPERADOR.qualificacoes**: Certificações e habilitações
+- **LINHA.tipos_pagamento**: Formas de pagamento aceitas pela linha.  
+  - Exemplo de valores possíveis: {“Dinheiro”, “Cartão de Débito”, “Cartão de Crédito”, “Bilhete Eletrônico”}.  
+  - Como atributo multivalorado, pode armazenar um conjunto de valores (1 ou mais) simultaneamente.
 
 ### 6.2 Atributos Compostos
-- **ESTACAO.localizacao**: Composto por latitude e longitude
-- **OPERADOR.contato**: Composto por telefone, email e endereço
-- **PROJETO_EXPANSAO.cronograma**: Composto por etapas, cada uma com data inicial e final
-- **SIMULACAO.resultados**: Composto por diferentes métricas e suas respectivas avaliações
+- **GARAGEM.endereco**:  
+  - Agrupa informações como *logradouro*, *numero*, *cidade* e *cep* em um atributo único.  
+  - Internamente pode ser representado em partes (campos separados) ou como texto completo.  
+  - Exemplo de componentes:  
+    - **logradouro**: Rua, Avenida etc.  
+    - **numero**: Número do endereço.  
+    - **cidade**: Nome do município.  
+    - **cep**: Código de Endereçamento Postal.
+
+- **MANUTENCAO.localizacao** (possível atributo composto):  
+  - Pode agrupar *latitude* e *longitude* em um único atributo denominado “localizacao”.  
+  - Exemplo de componentes:  
+    - **latitude**: Valor decimal da latitude.  
+    - **longitude**: Valor decimal da longitude.
+
 
 ## 7. Restrições Adicionais (não representáveis no diagrama EER)
 
