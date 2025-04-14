@@ -3,428 +3,400 @@
 ## 1. Introdução
 
 Este documento apresenta o projeto lógico do banco de dados para o Sistema de Gestão e Planejamento de Transporte Público (SGPTP) utilizando o Modelo Relacional. Este modelo foi derivado a partir do esquema conceitual EER desenvolvido na etapa anterior, aplicando as regras de mapeamento apropriadas para cada estrutura.
-
 ## 2. Esquema Relacional
 
-Abaixo está descrito o esquema relacional completo, incluindo todas as tabelas, atributos, chaves primárias, chaves estrangeiras e restrições de integridade.
+Abaixo está a proposta de esquema relacional completo, em um único arquivo, contemplando as tabelas, atributos, chaves primárias, chaves estrangeiras e restrições de integridade. Em seguida, há uma breve Análise de Normalização (até a 3ª Forma Normal) para cada tabela.
+
+---
 
 ### 2.1 Tabela: LINHA
 
-```
 LINHA (
-    id_linha INTEGER PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
-    tipo VARCHAR(20) NOT NULL,
-    status VARCHAR(15) CHECK (status IN ('ativa', 'desativada', 'em_manutencao')),
-    data_inauguracao DATE,
-    extensao_total DECIMAL(10,2) NOT NULL,
-    tempo_medio_percurso INTEGER NOT NULL,
-    capacidade_passageiros_hora INTEGER NOT NULL,
-    tarifa DECIMAL(6,2) NOT NULL
-)
-```
+    id_linha                INTEGER        PRIMARY KEY,
+    nome                    VARCHAR(50)    NOT NULL,
+    tipo                    VARCHAR(20)    NOT NULL,
+    status                  VARCHAR(15)    NOT NULL
+        CHECK (status IN ('ativa', 'desativada', 'em_manutencao')),
+    data_inauguracao        DATE,
+    extensao_total          DECIMAL(10,2)  NOT NULL,
+    tempo_medio_percurso    INTEGER        NOT NULL,
+    capacidade_passageiros_hora INTEGER    NOT NULL,
+    tarifa                  DECIMAL(6,2)   NOT NULL
+);
 
-### 2.2 Tabela: ESTACAO
+**Observações**:  
+- `id_linha` é a chave primária.  
+- A coluna `status` tem um CHECK para restringir valores possíveis.  
+- `extensao_total`, `tempo_medio_percurso`, `tarifa` etc. são apenas exemplos de atributos adicionais.  
+- Se houver o atributo multivalorado `tipos_pagamento`, será implementado em tabela auxiliar (LINHA_TIPOS_PAGAMENTO).
 
-```
-ESTACAO (
-    id_estacao INTEGER PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    tipo VARCHAR(20) NOT NULL,
-    status VARCHAR(15) CHECK (status IN ('operacional', 'em_manutencao', 'desativada')),
-    latitude DECIMAL(10,8) NOT NULL,
-    longitude DECIMAL(11,8) NOT NULL,
-    endereco VARCHAR(200) NOT NULL,
-    acessibilidade BOOLEAN DEFAULT FALSE,
-    capacidade INTEGER NOT NULL,
-    horario_abertura TIME NOT NULL,
-    horario_fechamento TIME NOT NULL
-)
-```
+---
 
-### 2.3 Tabela: TERMINAL (Especialização de ESTACAO)
+### 2.2 Tabela: LINHA_TIPOS_PAGAMENTO (para atributo multivalorado, se existir)
 
-```
-TERMINAL (
-    id_estacao INTEGER PRIMARY KEY,
-    num_plataformas INTEGER NOT NULL,
-    area_total DECIMAL(10,2) NOT NULL,
-    servicos_disponiveis TEXT,
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao) ON DELETE CASCADE
-)
-```
+LINHA_TIPOS_PAGAMENTO (
+    id_linha       INTEGER      NOT NULL,
+    tipo_pagamento VARCHAR(30)  NOT NULL,
+    PRIMARY KEY (id_linha, tipo_pagamento),
+    FOREIGN KEY (id_linha) REFERENCES LINHA (id_linha)
+);
 
-### 2.4 Tabela: PONTO_INTERMEDIARIO (Especialização de ESTACAO)
+- Cada registro relaciona uma LINHA a uma forma de pagamento aceita (por exemplo: Dinheiro, Cartão etc.).
 
-```
-PONTO_INTERMEDIARIO (
-    id_estacao INTEGER PRIMARY KEY,
-    tipo_abrigo VARCHAR(20) NOT NULL,
-    sinalizacao VARCHAR(50),
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao) ON DELETE CASCADE
-)
-```
+---
 
-### 2.5 Tabela: ESTACAO_SERVICO (Atributo multivalorado de ESTACAO)
+### 2.3 Tabela: ROTA
 
-```
-ESTACAO_SERVICO (
-    id_estacao INTEGER,
-    servico VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id_estacao, servico),
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao) ON DELETE CASCADE
-)
-```
-
-### 2.6 Tabela: TRECHO
-
-```
-TRECHO (
-    id_trecho INTEGER PRIMARY KEY,
-    estacao_origem INTEGER NOT NULL,
-    estacao_destino INTEGER NOT NULL,
-    distancia DECIMAL(8,2) NOT NULL,
-    tempo_medio INTEGER NOT NULL,
-    estado_conservacao VARCHAR(20) NOT NULL,
-    data_ultima_manutencao DATE,
-    tipo_via VARCHAR(30) NOT NULL,
-    FOREIGN KEY (estacao_origem) REFERENCES ESTACAO(id_estacao),
-    FOREIGN KEY (estacao_destino) REFERENCES ESTACAO(id_estacao),
-    CHECK (estacao_origem != estacao_destino)
-)
-```
-
-### 2.7 Tabela: ROTA
-
-```
 ROTA (
-    id_rota INTEGER PRIMARY KEY,
-    id_linha INTEGER NOT NULL,
-    direcao VARCHAR(10) CHECK (direcao IN ('ida', 'volta')),
-    horario_inicio_operacao TIME NOT NULL,
-    horario_fim_operacao TIME NOT NULL,
-    frequencia INTEGER NOT NULL,
-    dias_operacao VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_linha) REFERENCES LINHA(id_linha) ON DELETE CASCADE
-)
-```
+    id_rota        INTEGER       PRIMARY KEY,
+    id_linha       INTEGER       NOT NULL,
+    texto_letreiro VARCHAR(50),
+    FOREIGN KEY (id_linha) REFERENCES LINHA (id_linha)
+);
 
-### 2.8 Tabela: ROTA_ESTACAO (Relação N:M entre ROTA e ESTACAO)
+- Relacionamento “COMPÕE”: 1:N. Uma LINHA pode ter várias ROTAS, mas cada ROTA pertence a exatamente uma LINHA.
 
-```
-ROTA_ESTACAO (
-    id_rota INTEGER,
-    id_estacao INTEGER,
-    ordem INTEGER NOT NULL,
-    tempo_parada INTEGER NOT NULL,
-    PRIMARY KEY (id_rota, id_estacao),
-    FOREIGN KEY (id_rota) REFERENCES ROTA(id_rota) ON DELETE CASCADE,
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao) ON DELETE CASCADE
-)
-```
+---
 
-### 2.9 Tabela: VEICULO
+### 2.4 Tabela: TRECHO
 
-```
-VEICULO (
-    id_veiculo INTEGER PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL,
-    modelo VARCHAR(50) NOT NULL,
-    placa VARCHAR(10) UNIQUE NOT NULL,
-    capacidade INTEGER NOT NULL,
-    ano_fabricacao INTEGER NOT NULL,
-    data_aquisicao DATE NOT NULL,
-    estado VARCHAR(15) CHECK (estado IN ('ativo', 'em_manutencao', 'desativado')),
-    quilometragem INTEGER NOT NULL,
-    tipo_combustivel VARCHAR(20) NOT NULL,
-    acessibilidade BOOLEAN DEFAULT FALSE
-)
-```
+TRECHO (
+    id_trecho   INTEGER       PRIMARY KEY,
+    comprimento DECIMAL(10,2),
+    tempo_medio INTEGER,
+    geometria   VARCHAR(2000) -- ou tipo espacial, se disponível
+);
 
-### 2.10 Tabela: VEICULO_EQUIPAMENTO (Atributo multivalorado de VEICULO)
+- Armazena informações de um segmento de percurso.
 
-```
-VEICULO_EQUIPAMENTO (
-    id_veiculo INTEGER,
-    equipamento VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id_veiculo, equipamento),
-    FOREIGN KEY (id_veiculo) REFERENCES VEICULO(id_veiculo) ON DELETE CASCADE
-)
-```
+---
 
-### 2.11 Tabela: ONIBUS (Especialização de VEICULO)
+### 2.5 Tabela: ROTA_TRECHO (para o relacionamento M:N entre ROTA e TRECHO)
 
-```
-ONIBUS (
-    id_veiculo INTEGER PRIMARY KEY,
-    comprimento DECIMAL(5,2) NOT NULL,
-    num_portas INTEGER NOT NULL,
-    articulado BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id_veiculo) REFERENCES VEICULO(id_veiculo) ON DELETE CASCADE
-)
-```
+ROTA_TRECHO (
+    id_rota   INTEGER NOT NULL,
+    id_trecho INTEGER NOT NULL,
+    ordem     INTEGER,         -- se quiser indicar a sequência do trecho na rota
+    PRIMARY KEY (id_rota, id_trecho),
+    FOREIGN KEY (id_rota)   REFERENCES ROTA(id_rota),
+    FOREIGN KEY (id_trecho) REFERENCES TRECHO(id_trecho)
+);
 
-### 2.12 Tabela: VAGAO (Especialização de VEICULO)
+- Uma ROTA pode ser composta de vários TRECHOS, e um TRECHO pode pertencer a várias ROTAS.
 
-```
-VAGAO (
-    id_veiculo INTEGER PRIMARY KEY,
-    potencia INTEGER NOT NULL,
-    sistema_tracao VARCHAR(30) NOT NULL,
-    capacidade_pe INTEGER NOT NULL,
-    capacidade_sentado INTEGER NOT NULL,
-    FOREIGN KEY (id_veiculo) REFERENCES VEICULO(id_veiculo) ON DELETE CASCADE
-)
-```
+---
 
-### 2.13 Tabela: OPERADOR
+### 2.6 Tabela: PONTO
 
-```
-OPERADOR (
-    id_operador INTEGER PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    cargo VARCHAR(30) NOT NULL,
-    registro VARCHAR(20) UNIQUE NOT NULL,
-    data_admissao DATE NOT NULL,
-    status VARCHAR(15) CHECK (status IN ('ativo', 'afastado', 'inativo')),
-    telefone VARCHAR(20) NOT NULL,
-    email VARCHAR(50),
-    endereco VARCHAR(200) NOT NULL
-)
-```
+PONTO (
+    id_ponto  INTEGER      PRIMARY KEY,
+    nome      VARCHAR(100),
+    latitude  DECIMAL(8,5),
+    longitude DECIMAL(8,5)
+);
 
-### 2.14 Tabela: OPERADOR_QUALIFICACAO (Atributo multivalorado de OPERADOR)
+- Representa locais de parada.  
+- Se for necessário mapear a relação com TRECHO, pode existir uma tabela TRECHO_PONTO ou atributos em TRECHO apontando para “ponto_inicial” e “ponto_final”.
 
-```
-OPERADOR_QUALIFICACAO (
-    id_operador INTEGER,
-    qualificacao VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id_operador, qualificacao),
-    FOREIGN KEY (id_operador) REFERENCES OPERADOR(id_operador) ON DELETE CASCADE
-)
-```
+---
 
-### 2.15 Tabela: MOTORISTA (Especialização de OPERADOR)
+### 2.7 Tabela: TRECHO_PONTO (opcional, se for M:N entre TRECHO e PONTO)
 
-```
-MOTORISTA (
-    id_operador INTEGER PRIMARY KEY,
-    num_cnh VARCHAR(15) UNIQUE NOT NULL,
-    categoria_cnh VARCHAR(5) NOT NULL,
-    validade_cnh DATE NOT NULL,
-    FOREIGN KEY (id_operador) REFERENCES OPERADOR(id_operador) ON DELETE CASCADE
-)
-```
+TRECHO_PONTO (
+    id_trecho INTEGER NOT NULL,
+    id_ponto  INTEGER NOT NULL,
+    PRIMARY KEY (id_trecho, id_ponto),
+    FOREIGN KEY (id_trecho) REFERENCES TRECHO (id_trecho),
+    FOREIGN KEY (id_ponto)  REFERENCES PONTO  (id_ponto)
+);
 
-### 2.16 Tabela: CONDUTOR_TREM (Especialização de OPERADOR)
+---
 
-```
-CONDUTOR_TREM (
-    id_operador INTEGER PRIMARY KEY,
-    certificacao VARCHAR(30) NOT NULL,
-    horas_treinamento INTEGER NOT NULL,
-    FOREIGN KEY (id_operador) REFERENCES OPERADOR(id_operador) ON DELETE CASCADE
-)
-```
+### 2.8 Tabela: PARTIDA_PREVISTA
 
-### 2.17 Tabela: MANUTENCAO
+PARTIDA_PREVISTA (
+    id_partida      INTEGER     PRIMARY KEY,
+    id_rota         INTEGER     NOT NULL,
+    dia_semana      VARCHAR(20),
+    horario_previsto TIME       NOT NULL,
+    FOREIGN KEY (id_rota) REFERENCES ROTA (id_rota)
+);
 
-```
-MANUTENCAO (
-    id_manutencao INTEGER PRIMARY KEY,
-    tipo VARCHAR(20) CHECK (tipo IN ('preventiva', 'corretiva')),
-    data_inicio DATETIME NOT NULL,
-    data_conclusao DATETIME,
-    descricao TEXT NOT NULL,
-    custo DECIMAL(10,2) NOT NULL,
-    responsavel VARCHAR(100) NOT NULL,
-    status VARCHAR(15) CHECK (status IN ('agendada', 'em_andamento', 'concluida', 'cancelada')),
-    id_veiculo INTEGER,
-    id_estacao INTEGER,
-    CHECK ((id_veiculo IS NOT NULL AND id_estacao IS NULL) OR (id_veiculo IS NULL AND id_estacao IS NOT NULL)),
-    FOREIGN KEY (id_veiculo) REFERENCES VEICULO(id_veiculo),
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao)
-)
-```
+- Relacionamento com ROTA (N:1). Várias partidas podem pertencer à mesma ROTA.
 
-### 2.18 Tabela: MANUTENCAO_PECA (Peças utilizadas em uma manutenção)
+---
 
-```
-MANUTENCAO_PECA (
-    id_manutencao INTEGER,
-    peca VARCHAR(50) NOT NULL,
-    quantidade INTEGER NOT NULL,
-    PRIMARY KEY (id_manutencao, peca),
-    FOREIGN KEY (id_manutencao) REFERENCES MANUTENCAO(id_manutencao) ON DELETE CASCADE
-)
-```
+### 2.9 Tabela: VIAGEM
 
-### 2.19 Tabela: VIAGEM
-
-```
 VIAGEM (
-    id_viagem INTEGER PRIMARY KEY,
-    id_rota INTEGER NOT NULL,
-    id_veiculo INTEGER NOT NULL,
-    id_operador INTEGER NOT NULL,
-    horario_prog_partida DATETIME NOT NULL,
-    horario_real_partida DATETIME,
-    horario_prog_chegada DATETIME NOT NULL,
-    horario_real_chegada DATETIME,
-    status VARCHAR(15) CHECK (status IN ('programada', 'em_andamento', 'concluida', 'cancelada')),
-    num_passageiros INTEGER,
-    FOREIGN KEY (id_rota) REFERENCES ROTA(id_rota),
-    FOREIGN KEY (id_veiculo) REFERENCES VEICULO(id_veiculo),
-    FOREIGN KEY (id_operador) REFERENCES OPERADOR(id_operador)
-)
-```
+    id_viagem       INTEGER    PRIMARY KEY,
+    id_partida      INTEGER    NOT NULL,
+    data_hora       TIMESTAMP  NOT NULL,
+    cpf_motorista   CHAR(11)   NOT NULL,
+    FOREIGN KEY (id_partida)    REFERENCES PARTIDA_PREVISTA (id_partida),
+    FOREIGN KEY (cpf_motorista) REFERENCES MOTORISTA (cpf_motorista)
+);
 
-### 2.20 Tabela: OCORRENCIA
+- Relacionamentos: “CUMPRE” (com PARTIDA_PREVISTA), “FAZ” (com MOTORISTA).  
+- Guarda o registro de uma viagem efetivamente realizada.
 
-```
+---
+
+### 2.10 Tabela: OCORRENCIA
+
 OCORRENCIA (
-    id_ocorrencia INTEGER PRIMARY KEY,
-    id_viagem INTEGER NOT NULL,
-    tipo VARCHAR(30) NOT NULL,
-    data_hora DATETIME NOT NULL,
-    localizacao VARCHAR(200) NOT NULL,
-    descricao TEXT NOT NULL,
-    gravidade VARCHAR(15) CHECK (gravidade IN ('baixa', 'media', 'alta', 'critica')),
-    solucao TEXT,
-    tempo_resolucao INTEGER,
-    impacto TEXT,
-    FOREIGN KEY (id_viagem) REFERENCES VIAGEM(id_viagem) ON DELETE CASCADE
-)
-```
+    id_ocorrencia  INTEGER     PRIMARY KEY,
+    id_viagem      INTEGER     NOT NULL,
+    data_hora      TIMESTAMP   NOT NULL,
+    descricao      VARCHAR(200),
+    tipo           VARCHAR(50),
+    FOREIGN KEY (id_viagem) REFERENCES VIAGEM (id_viagem)
+);
 
-### 2.21 Tabela: DEMANDA
+- Uma VIAGEM pode ter várias ocorrências.
 
-```
-DEMANDA (
-    id_demanda INTEGER PRIMARY KEY,
-    data DATE NOT NULL,
-    faixa_horaria VARCHAR(20) NOT NULL,
-    volume_passageiros INTEGER NOT NULL,
-    tipo_dia VARCHAR(10) CHECK (tipo_dia IN ('util', 'sabado', 'domingo', 'feriado')),
-    taxa_ocupacao DECIMAL(5,2) NOT NULL,
-    origem_dados VARCHAR(50) NOT NULL,
-    id_linha INTEGER,
-    id_estacao INTEGER,
-    CHECK ((id_linha IS NOT NULL AND id_estacao IS NULL) OR (id_linha IS NULL AND id_estacao IS NOT NULL)),
-    FOREIGN KEY (id_linha) REFERENCES LINHA(id_linha),
-    FOREIGN KEY (id_estacao) REFERENCES ESTACAO(id_estacao)
-)
-```
+---
 
-### 2.22 Tabela: BILHETE
+### 2.11 Tabela: USUARIO
 
-```
+USUARIO (
+    cpf             CHAR(11)     PRIMARY KEY,
+    nome            VARCHAR(100) NOT NULL,
+    data_nascimento DATE,
+    genero          VARCHAR(20)
+);
+
+- Representa um passageiro/cliente.
+
+---
+
+### 2.12 Tabela: BILHETE
+
 BILHETE (
-    id_bilhete INTEGER PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL,
-    data_hora_emissao DATETIME NOT NULL,
-    valor DECIMAL(6,2) NOT NULL,
-    id_usuario VARCHAR(50)
-)
-```
+    id_bilhete  INTEGER      PRIMARY KEY,
+    cpf_usuario CHAR(11)     NOT NULL,
+    saldo       DECIMAL(8,2) NOT NULL,
+    tipo_cartao VARCHAR(50)  NOT NULL,
+    FOREIGN KEY (cpf_usuario) REFERENCES USUARIO(cpf)
+);
 
-### 2.23 Tabela: BILHETE_VIAGEM (Relação N:M entre BILHETE e VIAGEM)
+- Relacionamento “TEM” (1:N) com USUARIO.
 
-```
-BILHETE_VIAGEM (
-    id_bilhete INTEGER,
-    id_viagem INTEGER,
-    timestamp_utilizacao DATETIME NOT NULL,
-    estacao_entrada INTEGER NOT NULL,
-    estacao_saida INTEGER,
-    PRIMARY KEY (id_bilhete, id_viagem),
-    FOREIGN KEY (id_bilhete) REFERENCES BILHETE(id_bilhete),
-    FOREIGN KEY (id_viagem) REFERENCES VIAGEM(id_viagem),
-    FOREIGN KEY (estacao_entrada) REFERENCES ESTACAO(id_estacao),
-    FOREIGN KEY (estacao_saida) REFERENCES ESTACAO(id_estacao)
-)
-```
+---
 
-### 2.24 Tabela: PROJETO_EXPANSAO
+### 2.13 Tabela: ENTRADA
 
-```
-PROJETO_EXPANSAO (
-    id_projeto INTEGER PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT NOT NULL,
-    status VARCHAR(20) CHECK (status IN ('em_analise', 'aprovado', 'em_execucao', 'concluido', 'cancelado')),
-    data_inicio_prev DATE NOT NULL,
-    data_conclusao_prev DATE NOT NULL,
-    orcamento DECIMAL(15,2) NOT NULL,
-    regiao VARCHAR(100) NOT NULL,
-    beneficios TEXT NOT NULL,
-    responsavel VARCHAR(100) NOT NULL
-)
-```
+ENTRADA (
+    id_entrada    INTEGER      PRIMARY KEY,
+    id_bilhete    INTEGER      NOT NULL,
+    cpf_cobrador  CHAR(11),
+    tarifa        DECIMAL(6,2) NOT NULL,
+    horario       TIMESTAMP    NOT NULL,
+    FOREIGN KEY (id_bilhete)   REFERENCES BILHETE (id_bilhete),
+    FOREIGN KEY (cpf_cobrador) REFERENCES COBRADOR (cpf_cobrador)
+);
 
-### 2.25 Tabela: PROJETO_LINHA (Relação entre PROJETO_EXPANSAO e novas LINHAS)
+- Relacionamento “É USADO EM” (com BILHETE). Se COBRADOR for opcional, `cpf_cobrador` pode ser NULL.
 
-```
-PROJETO_LINHA (
-    id_projeto INTEGER,
-    id_linha INTEGER,
-    impacto_estimado TEXT NOT NULL,
-    prioridade INTEGER NOT NULL,
-    PRIMARY KEY (id_projeto, id_linha),
-    FOREIGN KEY (id_projeto) REFERENCES PROJETO_EXPANSAO(id_projeto),
-    FOREIGN KEY (id_linha) REFERENCES LINHA(id_linha)
-)
-```
+---
 
-### 2.26 Tabela: SIMULACAO
+### 2.14 Tabela: EMPRESA
 
-```
-SIMULACAO (
-    id_simulacao INTEGER PRIMARY KEY,
-    id_projeto INTEGER NOT NULL,
-    data_criacao DATETIME NOT NULL,
-    parametros TEXT NOT NULL,
-    resultados TEXT NOT NULL,
-    demanda_projetada INTEGER NOT NULL,
-    custo_operacional DECIMAL(15,2) NOT NULL,
-    impacto_rede TEXT NOT NULL,
-    validacao VARCHAR(10) CHECK (validacao IN ('aprovada', 'rejeitada', 'pendente')),
-    FOREIGN KEY (id_projeto) REFERENCES PROJETO_EXPANSAO(id_projeto)
-)
-```
+EMPRESA (
+    cnpj  CHAR(14)      PRIMARY KEY,
+    nome  VARCHAR(100)  NOT NULL
+);
 
-### 2.27 Tabela: SIMULACAO_CENARIO (Para os diferentes cenários de uma simulação)
+- Relacionamento “CONTRATA” (1:N) com FUNCIONARIO.
 
-```
-SIMULACAO_CENARIO (
-    id_simulacao INTEGER,
-    cenario VARCHAR(50) NOT NULL,
-    confiabilidade DECIMAL(5,2) NOT NULL,
-    descricao TEXT NOT NULL,
-    PRIMARY KEY (id_simulacao, cenario),
-    FOREIGN KEY (id_simulacao) REFERENCES SIMULACAO(id_simulacao) ON DELETE CASCADE
-)
-```
+---
+
+### 2.15 Tabela: FUNCIONARIO (superclasse)
+
+FUNCIONARIO (
+    cpf            CHAR(11)     PRIMARY KEY,
+    cnpj_empresa   CHAR(14)     NOT NULL,
+    nome           VARCHAR(100) NOT NULL,
+    salario        DECIMAL(10,2),
+    FOREIGN KEY (cnpj_empresa) REFERENCES EMPRESA(cnpj)
+);
+
+- Todos os funcionários se encontram aqui; as subclasses terão tabelas próprias (Class Table Inheritance) ou uso de uma coluna discriminadora.
+
+---
+
+### 2.16 Tabela: OPERADOR (subclasse de FUNCIONARIO)
+
+OPERADOR (
+    cpf_operador CHAR(11)   PRIMARY KEY,
+    FOREIGN KEY (cpf_operador) REFERENCES FUNCIONARIO (cpf)
+);
+
+- Não adiciona novos atributos além dos herdados.
+
+---
+
+### 2.17 Tabela: MOTORISTA (subclasse de OPERADOR)
+
+MOTORISTA (
+    cpf_motorista   CHAR(11)   PRIMARY KEY,
+    cod_habilitacao VARCHAR(20),
+    FOREIGN KEY (cpf_motorista) REFERENCES OPERADOR (cpf_operador)
+);
+
+- Subtipo de OPERADOR, portanto sub-subtipo de FUNCIONARIO.
+
+---
+
+### 2.18 Tabela: COBRADOR (subclasse de OPERADOR)
+
+COBRADOR (
+    cpf_cobrador CHAR(11) PRIMARY KEY,
+    FOREIGN KEY (cpf_cobrador) REFERENCES OPERADOR (cpf_operador)
+);
+
+- Subtipo de OPERADOR.
+
+---
+
+### 2.19 Tabela: TECNICO (subclasse de FUNCIONARIO)
+
+TECNICO (
+    cpf_tecnico CHAR(11) PRIMARY KEY,
+    FOREIGN KEY (cpf_tecnico) REFERENCES FUNCIONARIO (cpf)
+);
+
+- Subtipo de FUNCIONARIO (disjoint de OPERADOR).
+
+---
+
+### 2.20 Tabela: MANUTENCAO
+
+MANUTENCAO (
+    id_servico  INTEGER      PRIMARY KEY,
+    data        DATE         NOT NULL,
+    descricao   VARCHAR(200),
+    latitude    DECIMAL(8,5),
+    longitude   DECIMAL(8,5),
+    cod_veiculo INTEGER,
+    FOREIGN KEY (cod_veiculo) REFERENCES VEICULO(cod_veiculo)
+);
+
+- Possível relacionamento com VEICULO.  
+
+#### Tabela associativa para TÉCNICO e MANUTENCAO (M:N)
+
+TECNICO_MANUTENCAO (
+    cpf_tecnico CHAR(11)  NOT NULL,
+    id_servico  INTEGER   NOT NULL,
+    PRIMARY KEY (cpf_tecnico, id_servico),
+    FOREIGN KEY (cpf_tecnico) REFERENCES TECNICO (cpf_tecnico),
+    FOREIGN KEY (id_servico)  REFERENCES MANUTENCAO (id_servico)
+);
+
+---
+
+### 2.21 Tabela: VEICULO
+
+VEICULO (
+    cod_veiculo          INTEGER      PRIMARY KEY,
+    placa                VARCHAR(10)  NOT NULL UNIQUE,
+    data_inicio_operacao DATE,
+    latitude             DECIMAL(8,5),
+    longitude            DECIMAL(8,5),
+    nome_modelo          VARCHAR(50)  NOT NULL,
+    id_garagem           INTEGER      NOT NULL,
+    FOREIGN KEY (nome_modelo) REFERENCES MODELO (nome_modelo),
+    FOREIGN KEY (id_garagem) REFERENCES GARAGEM (id_garagem)
+);
+
+- Relacionamento com MODELO (N:1, “POSSUI”) e com GARAGEM (N:1, “ESTACIONA EM”).
+
+---
+
+### 2.22 Tabela: MODELO
+
+MODELO (
+    nome_modelo VARCHAR(50) PRIMARY KEY,
+    tipo        VARCHAR(50),
+    fabricante  VARCHAR(100),
+    capacidade  INTEGER
+);
+
+---
+
+### 2.23 Tabela: GARAGEM
+
+GARAGEM (
+    id_garagem     INTEGER       PRIMARY KEY,
+    estoque_diesel DECIMAL(10,2),
+    num_eletropostos INTEGER,
+    capacidade     INTEGER,
+    logradouro     VARCHAR(100),
+    numero         VARCHAR(10),
+    cidade         VARCHAR(50),
+    cep            VARCHAR(10)
+);
+
+---
+
+### 2.24 Tabela: ESCALA
+
+ESCALA (
+    id_escala    INTEGER      PRIMARY KEY,
+    hora_inicio  TIME         NOT NULL,
+    hora_fim     TIME         NOT NULL
+);
+
+#### Tabela associativa: ESCALA_FUNCIONARIO (relacionamento M:N, “É CUMPRIDA POR”)
+
+ESCALA_FUNCIONARIO (
+    id_escala  INTEGER   NOT NULL,
+    cpf_func   CHAR(11)  NOT NULL,
+    PRIMARY KEY (id_escala, cpf_func),
+    FOREIGN KEY (id_escala) REFERENCES ESCALA (id_escala),
+    FOREIGN KEY (cpf_func)  REFERENCES FUNCIONARIO (cpf)
+);
+
+---
 
 ## 3. Análise de Normalização
 
-### 3.1 Verificação das Formas Normais
+A maior parte das tabelas propostas estão em **3ª Forma Normal (3FN)**, pois:
 
-#### Primeira Forma Normal (1FN)
-- Todas as tabelas possuem chaves primárias definidas.
-- Todos os atributos são atômicos (não-divisíveis).
-- Atributos multivalorados foram transformados em tabelas separadas (ex: ESTACAO_SERVICO, VEICULO_EQUIPAMENTO, OPERADOR_QUALIFICACAO).
-- Atributos compostos foram decompostos (ex: coordenadas geográficas em latitude e longitude, contatos separados em telefone, email e endereço).
+1. **1FN**:  
+   - Os atributos são atômicos e as repetições multivaloradas foram isoladas (ex.: LINHA_TIPOS_PAGAMENTO).
 
-#### Segunda Forma Normal (2FN)
-- Todas as tabelas estão na 1FN.
-- Todos os atributos não-chave dependem da chave primária completa.
-- Nas tabelas com chaves compostas (ex: ROTA_ESTACAO, BILHETE_VIAGEM), todos os atributos dependem da combinação completa das chaves.
+2. **2FN**:  
+   - Não há dependências parciais em PKs simples. Quando há PK composta (em tabelas associativas), os atributos não-chave (se houver) dependem do conjunto inteiro de atributos da PK.
 
-#### Terceira Forma Normal (3FN)
-- Todas as tabelas estão na 2FN.
-- Não existem dependências transitivas, ou seja, nenhum atributo não-chave depende de outro atributo não-chave.
-- As informações relacionadas a entidades distintas foram separadas em tabelas próprias (ex: VEICULO, OPERADOR, MANUTENCAO).
+3. **3FN**:  
+   - Não existem atributos não-chave que dependam de outros atributos não-chave, evitando dependências transitivas.
+
+### Exemplos rápidos de verificação:
+
+- **Tabela LINHA**:  
+  - PK = `id_linha`. Todos os outros atributos dependem somente de `id_linha`. Sem dependências transitivas.
+
+- **Tabela ROTA**:  
+  - PK = `id_rota`, FK para `id_linha`. Nenhum atributo depende de outro atributo não-chave.
+
+- **Tabela ROTA_TRECHO** (PK composta):  
+  - PK = (`id_rota`, `id_trecho`). O atributo `ordem` depende do par inteiro. Não há dependência parcial ou transitiva.
+
+- **Tabela FUNCIONARIO** + Subclasses (OPERADOR, TÉCNICO, MOTORISTA, COBRADOR)**:  
+  - Em “Class Table Inheritance”, cada subclasse tem como PK a PK herdada. Não há violação de 3FN.
+
+- **Tabela VEICULO**:  
+  - PK = `cod_veiculo`. FKs = `nome_modelo`, `id_garagem`. Todos os atributos não-chave dependem de `cod_veiculo`.
+
+- **Tabela ESCALA_FUNCIONARIO** (PK composta):  
+  - Atributos não-chave (se existirem) dependeriam do par (`id_escala`, `cpf_func`).  
+  - Em 3FN.
+
+Como não há indicativos de violações formais (colunas calculadas, dependências “entre” colunas não-chave etc.), podemos afirmar que as tabelas seguem adequadamente a 3FN. Caso haja regras de negócio adicionais, podem ser tratadas por CHECK constraints, triggers ou pela aplicação.
+
+---
 
 #### Forma Normal de Boyce-Codd (FNBC)
 - Todas as tabelas estão na 3FN.
