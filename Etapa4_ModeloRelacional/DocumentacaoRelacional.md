@@ -7,7 +7,7 @@ Este documento apresenta o projeto lógico do banco de dados para o Sistema de G
 
 Abaixo está a proposta de esquema relacional completo, em um único arquivo, contemplando as tabelas, atributos, chaves primárias, chaves estrangeiras e restrições de integridade. Em seguida, há uma breve Análise de Normalização (até a 3ª Forma Normal) para cada tabela.
 
----
+![image](esquema_relacional_projeto1.png)
 
 ### 2.1 Tabela: LINHA
 
