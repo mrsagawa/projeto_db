@@ -292,7 +292,7 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
 
 ### 4.6 Relacionamento: SEGUE (entre VEÍCULO, ROTA e VIAGEM)
 - **Cardinalidade**: indefinida, relacionamento ternário 
-- **Atributos**: horario_inicio, horario_fim
+- **Atributos**: Não possui
 
 
 ### 4.7 Relacionamento: COMPÕE (entre LINHA e ROTA)
