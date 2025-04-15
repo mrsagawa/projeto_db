@@ -71,7 +71,8 @@ Armazena os horários programados (dia e hora) em que as viagens devem ocorrer. 
 Registra a realização efetiva de uma rota em um horário específico, associada a um motorista e a um veículo. É uma entidade fraca vinculada a VEÍCULO e ROTA.
 
 #### Atributos
-- **data_hora**: Momento registrado de início da viagem.
+- **datahora_inicio**: Momento registrado de início da viagem.
+- **datahora_fim**: Momento registrado de término da viagem.
 
 
 ### 3.7 Entidade: OCORRÊNCIA
