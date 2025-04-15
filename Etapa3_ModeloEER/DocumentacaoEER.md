@@ -6,7 +6,7 @@ Este documento apresenta o projeto conceitual do banco de dados para o Sistema d
 
 ## 2. Diagrama EER
 
-TODO!
+![image](esquema_entidade_relacionamento_projeto1.png)
 
 ## 3. Entidades e Seus Atributos
 
