@@ -2,15 +2,17 @@
 
 ## 1. Introdução
 
-Este documento apresenta o projeto lógico do banco de dados para o Sistema de Gestão e Planejamento de Transporte Público (SGPTP) utilizando o Modelo Relacional. Este modelo foi derivado a partir do esquema conceitual EER desenvolvido na etapa anterior, aplicando as regras de mapeamento apropriadas para cada estrutura.
+Este documento apresenta o projeto lógico do banco de dados para um sistema operacional e informativo de uma rede de transporte público de ônibus, utilizando o Modelo Relacional. Este modelo foi derivado a partir do esquema conceitual EER desenvolvido na etapa anterior.
+
+
 ## 2. Esquema Relacional
 
-Abaixo está a proposta de esquema relacional completo, em um único arquivo, contemplando as tabelas, atributos, chaves primárias, chaves estrangeiras e restrições de integridade. Em seguida, há uma breve Análise de Normalização (até a 3ª Forma Normal) para cada tabela.
+Abaixo está a proposta de esquema relacional completo, em um único arquivo, contemplando as tabelas, atributos, chaves primárias, chaves estrangeiras (denotadas com um "FK"), unicidades (denotadas com um "U"), restrições de integridade e tipo dos atributos (exceto quando são chave estrangeira). Em seguida, há uma breve análise de normalização (até a 3ª Forma Normal) para cada tabela.
 
 ![image](esquema_relacional_projeto1.png)
 
 ### 2.1 Tabela: LINHA
-
+```
 LINHA (
     id_linha                INTEGER        PRIMARY KEY,
     nome                    VARCHAR(50)    NOT NULL,
@@ -23,7 +25,7 @@ LINHA (
     capacidade_passageiros_hora INTEGER    NOT NULL,
     tarifa                  DECIMAL(6,2)   NOT NULL
 );
-
+```
 **Observações**:  
 - `id_linha` é a chave primária.  
 - A coluna `status` tem um CHECK para restringir valores possíveis.  
