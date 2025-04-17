@@ -217,6 +217,7 @@ Representa o veículo utilizado para prestar serviço de transporte, como ônibu
 - **status**: situação do veículo (se está ativo, em manutenção...).
 - **latitude** (opcional): Localização atual do veículo.
 - **longitude** (opcional): Localização atual do veículo.
+- **ultima_atualização**: data e hora da última atualização da localização (latitude e longitude)
 
 
 ### 3.20 Entidade: MODELO
