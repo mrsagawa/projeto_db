@@ -1,13 +1,10 @@
 # Etapa 4 – Projeto Lógico do Banco de Dados (Modelo Relacional)
 
-1. O **esquema relacional completo** – tabelas, atributos, tipos, chaves, restrições.  
-2. A **análise de normalização** (1FN → BCNF).  
+## 1. Introdução
 
-![Diagrama relacional](esquema_relacional_projeto1.png)
+Este documento apresenta o projeto lógico do banco de dados para o sistema operacional e informativo de uma rede de transporte público por ônibus, usando o Modelo Relacional. Esta etapa usa o projeto conceitual desenvolvido na etapa anterior. Na seção 2. apresentamos o esquema relacional completo e detalhes de implementação de cada tabela (atributos, tipos, chaves e restrições). Na seção 3, analisamos a adequação do esquema a cada Forma Normal.
 
----
-
-## 1. Convenções
+Listamos abaixo as convenções de notação usadas neste documento.
 
 | Símbolo | Significado |
 |---------|-------------|
@@ -15,11 +12,12 @@
 | **(FK)** | chave estrangeira (tipo omitido – usa o da referência) |
 | **(U)**  | restrição de unicidade |
 
----
 
 ## 2. Esquema Relacional
+![Diagrama relacional](esquema_relacional_projeto1.png)
 
-> Cada bloco SQL já reflete fielmente os nomes/relacionamentos do diagrama.
+
+Abaixo apresentamos os detalhes de implementação de cada tabela.
 
 ### 2.1 EMPRESA
 ```sql
@@ -66,7 +64,7 @@ CUMPRIDA_POR (
 );
 ```
 
-### 2.4 USUARIO e BILHETE
+### 2.4 USUARIO • BILHETE • BILHETE_COBRADOR • BILHETE_USUARIO
 ```sql
 USUARIO (
     cpf             CHAR(11) PRIMARY KEY,
@@ -79,8 +77,16 @@ BILHETE (
     cod_cartao   INT PRIMARY KEY,
     saldo        DECIMAL(10,2) NOT NULL,
     tipo_cartao  INT NOT NULL,
-    cpf          (FK),           -- → USUARIO
-    cpf_cobrador (FK) (U)        -- → COBRADOR
+);
+
+BILHETE_COBRADOR (
+    cod_cartao   (FK) (U),
+    cpf (FK) PRIMARY KEY
+);
+
+BILHETE_USUARIO (
+    cod_cartao   (FK) PRIMARY KEY,
+    cpf          (FK)
 );
 ```
 
@@ -215,9 +221,8 @@ ENTRADA (
 );
 ```
 
----
 
-## 3. Normalização (até BCNF)
+## 3. Normalização (até FNBC)
 Vamos avaliar a adequação do modelo a cada Forma Normal.
 
 - **1FN** – todos os atributos são atômicos e não repetitivos. 
@@ -236,25 +241,27 @@ Portanto, o esquema está na 2FN.
 - **3FN e FNBC**
 Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo. Ao garantir que o esquema está na FNBC, garantimos que está na 3FN e nas formas normais anteriores.
 
-| Tabela             | Dependências Funcionais e Observações                                                                                                                                                                                                                                                                                                                                                                    |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **EMPRESA**        | `cnpj` é determinante e superchave.                                                                                                                                                                                                                                                                                                                                                                      |
-| **FUNCIONÁRIO**    | `cpf → cnpj, nome, salário`. Não há outras DF não triviais. Portanto, `cpf` é determinante e superchave.                                                                                                                                                                                                                                                                                                 |
-| **TECNICO**        | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
+| Tabela             | Dependências Funcionais e Observações|
+|--------------------|-------|
+| **EMPRESA**        | `cnpj` é determinante e superchave.|
+| **FUNCIONÁRIO**    | `cpf → cnpj, nome, salário`. Não há outras DF não triviais. Portanto, `cpf` é determinante e superchave.|
+| **TECNICO**        | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.|
 | **ADMINISTRADOR**  | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
 | **OPERADOR**       | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
-| **MOTORISTA**      | Como `cod_habilitacao` foi declarado como UNIQUE NOT NULL, é considerado chave candidata. Dessa forma, as chaves candidatas são `cpf` e `cod_habilitacao`. Ambas são determinantes.                                                                                                                                                                                                                      |
+| **MOTORISTA**      | Como `cod_habilitacao` foi declarado como UNIQUE NOT NULL, é considerado chave candidata. Dessa forma, as chaves candidatas são `cpf` e `cod_habilitacao`. Ambas são determinantes.|
 | **COBRADOR**       | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
 | **ESCALA**         | `cod_escala → hora_inicio, hora_fim, dia_semana`. `cod_escala` é determinante e superchave.                                                                                                                                                                                                                                                                                                              |
-| **CUMPRIDA_POR**   | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
-| **USUARIO**        | Única DF não trivial é `cpf → nome, data_nascimento, genero`. `cpf` é determinante e superchave.                                                                                                                                                                                                                                                                                                         |
-| **BILHETE**        | Chaves candidatas: `cod_cartao` e `cpf_cobrador`. DF: `cod_cartao → saldo, tipo_cartao, cpf, cpf_cobrador` ou `cpf_cobrador → cod_cartao, saldo, tipo_cartao, cpf`. Os determinantes da tabela são as chaves candidatas.                                                                                                                                                                                 |
+| **CUMPRIDA_POR**   | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave. |
+| **USUARIO**        | Única DF não trivial é `cpf → nome, data_nascimento, genero`. `cpf` é determinante e superchave. |
+| **BILHETE**        | Chave candidata: `cod_cartao`. DF: `cod_cartao → saldo, tipo_cartao`. O determinante da tabela é a chave.|
+| **BILHETE_COBRADOR** | Chaves candidatas: `cod_cartao` e `cpf`. DF: `cod_cartao → cpf` ou `cpf → cod_cartao`. Um dos determinantes da tabela é a chave candidata. Escolhemos um deles para garantir que a chave primária é minimal.|
+| **BILHETE_USUARIO**        | Chaves candidatas: `cod_cartao`. DF: `cod_cartao → cpf`. O determinante da tabela é a chave.|
 | **LINHA**          | `cod_linha → nome_linha, data_criacao`. Não existem outras DF não triviais. Logo, `cod_linha` é determinante e superchave.                                                                                                                                                                                                                                                                               |
-| **ROTA**           | Como o `texto_letreiro` é único apenas dentro da linha, pode repetir em linhas diferentes. DF: `cod_rota → texto_letreiro, cod_linha`. Logo, `cod_rota` é determinante e superchave.                                                                                                                                                                                                                      |
+| **ROTA**           | Como o `texto_letreiro` é único apenas dentro da linha, pode repetir em linhas diferentes. DF: `cod_rota → texto_letreiro, cod_linha`. Logo, `cod_rota` é determinante e superchave.|
 | **PARTIDA_PREVISTA**| A única DF não trivial é a própria PK (`cod_rota, horario_previsto, dia_semana`).                                                                                                                                                                                                                                                                                                                        |
 | **PONTO**          | Chaves candidatas: `cod_ponto` e `(latitude, longitude)`. Não há outras DF não triviais sem chaves candidatas como determinantes.                                                                                                                                                                                                                                                                       |
 | **TRECHO**         | Como comprimento, tempo médio e geometria são computados individualmente para cada par de pontos, não há dependência funcional entre os atributos. `(cod_ponto_inicio, cod_ponto_fim)` são chave e determinantes.                                                                                                                                                                                         |
-| **PERCORRE**       | `(cod_rota, ordem)` é superchave e determinante.                                                                                                                                                                                                                                                                                                                                                         |
+| **PERCORRE**       | `(cod_rota, ordem)` é superchave e determinante.|
 | **FABRICANTE**     | Não existem DF não‑triviais além da identidade; logo todo determinante é superchave.                                                                                                                                                                                                                                                                                                                     |
 | **MODELO**         | Considerando que `"tipo"` não determina capacidade, `cod_modelo` é determinante e superchave.                                                                                                                                                                                                                                                                                                             |
 | **GARAGEM**        | `cod_garagem` é determinante dos outros atributos (endereço e capacidade). Atributos como componentes do endereço ou capacidades não são principais, já que podem se repetir em garagens diferentes.                                                                                                                                                                                                      |

@@ -10,6 +10,8 @@ Este documento apresenta o projeto conceitual do banco de dados para o sistema o
 
 ## 3. Entidades e atributos
 
+Nesta seção, detalhamos os atributos de cada entidade.
+
 ### 3.1 Entidade: LINHA
 
 #### Descrição
@@ -94,7 +96,7 @@ Representa o passageiro ou cliente que utiliza o sistema de bilhetagem por cart�
 ### 3.8 Entidade: BILHETE
 
 #### Descrição
-Representa o cartão ou passe utilizado pelo usuário para pagar a tarifa de transporte.
+Representa o cartão ou passe utilizado pelo usuário para pagar a tarifa de transporte. Ten dois tipos disjuntos: BILHETE_USUARIO e BILHETE_COBRADOR.
 
 #### Atributos
 - **cod_cartao** (Chave primária): Identificador único do bilhete/cartão.
@@ -102,7 +104,25 @@ Representa o cartão ou passe utilizado pelo usuário para pagar a tarifa de tra
 - **tipo_cartao**: Tipo do bilhete (ex.: Estudante, Comum, Idoso, Cobrador, etc.).
 
 
-### 3.9 Entidade: ENTRADA
+### 3.9 Entidade: BILHETE_USUARIO
+
+#### Descrição
+Subtipo de bilhete usado por passageiros.
+
+#### Atributos
+- *Herdados de BILHETE*: cod_cartao, saldo, tipo_cartao.
+- *Não possui atributos próprios além dos herdados*.
+
+### 3.10 Entidade: BILHETE_COBRADOR
+
+#### Descrição
+Subtipo de bilhete usado por cobradores.
+
+#### Atributos
+- *Herdados de BILHETE*: cod_cartao, saldo, tipo_cartao.
+- *Não possui atributos próprios além dos herdados*.
+
+### 3.11 Entidade: ENTRADA
 
 #### Descrição
 Registra o ato de pagamento da passagem em uma viagem, incluindo valor da tarifa cobrada e horário.É uma entidade fraca de BILHETE e VIAGEM que, por sua vez, é entidade fraca de VEÍCULO e ROTA a partir de relacionamentos de identificação.
@@ -112,7 +132,7 @@ Registra o ato de pagamento da passagem em uma viagem, incluindo valor da tarifa
 - **horario** (identificador parcial): Momento em que o usuário passou pela catraca ou registrou a entrada.
 
 
-### 3.10 Entidade: FUNCIONÁRIO
+### 3.12 Entidade: FUNCIONÁRIO
 
 #### Descrição
 Representa o colaborador vinculado à empresa de transporte. Tem dois tipos disjuntos: OPERADOR, TÉCNICO e ADMINISTRADOR.
@@ -123,7 +143,7 @@ Representa o colaborador vinculado à empresa de transporte. Tem dois tipos disj
 - **salario**: Valor de salário do funcionário.
 
 
-### 3.11 Entidade: TÉCNICO
+### 3.13 Entidade: TÉCNICO
 
 #### Descrição
 Subtipo de Funcionário incumbido das atividades de manutenção de veículos.
@@ -132,7 +152,7 @@ Subtipo de Funcionário incumbido das atividades de manutenção de veículos.
 - *Herdados de FUNCIONÁRIO*: cpf, nome, salario.
 - *Não possui atributos próprios além dos herdados*.
 
-### 3.12 Entidade: ADMINISTRADOR
+### 3.14 Entidade: ADMINISTRADOR
 
 #### Descrição
 Subtipo de Funcionário incumbido das atividades de administração do sistema.
@@ -142,7 +162,7 @@ Subtipo de Funcionário incumbido das atividades de administração do sistema.
 - *Não possui atributos próprios além dos herdados*.
 
 
-### 3.13 Entidade: OPERADOR
+### 3.15 Entidade: OPERADOR
 
 #### Descrição
 Subtipo de Funcionário que atua diretamente na operação do sistema. Tem dois tipos conjuntos: MOTORISTA e COBRADOR.
@@ -152,7 +172,7 @@ Subtipo de Funcionário que atua diretamente na operação do sistema. Tem dois 
 - *Não possui atributos próprios além dos herdados*.
 
 
-### 3.14 Entidade: COBRADOR
+### 3.16 Entidade: COBRADOR
 
 #### Descrição
 Subtipo de Operador responsável por receber pagamento de passagens ou validar bilhetes.
@@ -162,7 +182,7 @@ Subtipo de Operador responsável por receber pagamento de passagens ou validar b
 - *Não possui atributos próprios além dos herdados* (conforme o diagrama atual).
 
 
-### 3.15 Entidade: MOTORISTA
+### 3.17 Entidade: MOTORISTA
 
 #### Descrição
 Subtipo de Operador responsável por conduzir o veículo no percurso definido.
@@ -172,7 +192,7 @@ Subtipo de Operador responsável por conduzir o veículo no percurso definido.
 - **cod_habilitacao** (ou num_cnh): Número de registro da habilitação.
 
 
-### 3.16 Entidade: ESCALA
+### 3.18 Entidade: ESCALA
 
 #### Descrição
 Define o horário de trabalho de um funcionário, incluindo hora de início e hora de término.
@@ -184,7 +204,7 @@ Define o horário de trabalho de um funcionário, incluindo hora de início e ho
 - **hora_fim**: Horário em que a escala termina.
 
 
-### 3.17 Entidade: EMPRESA
+### 3.19 Entidade: EMPRESA
 
 #### Descrição
 Representa as empresas que gerenciam e contratam os funcionários para o sistema de transporte.
@@ -194,7 +214,7 @@ Representa as empresas que gerenciam e contratam os funcionários para o sistema
 - **nome**: Nome legal da empresa.
 
 
-### 3.18 Entidade: MANUTENÇÃO
+### 3.20 Entidade: MANUTENÇÃO
 
 #### Descrição
 Registra um serviço de reparo ou revisão feitos nos veículos.
@@ -205,7 +225,7 @@ Registra um serviço de reparo ou revisão feitos nos veículos.
 - **descricao**: Detalhes sobre o tipo de manutenção realizada.
 
 
-### 3.19 Entidade: VEÍCULO
+### 3.21 Entidade: VEÍCULO
 
 #### Descrição
 Representa o veículo utilizado para prestar serviço de transporte, como ônibus ou vans.
@@ -220,7 +240,7 @@ Representa o veículo utilizado para prestar serviço de transporte, como ônibu
 - **ultima_atualização**: data e hora da última atualização da localização (latitude e longitude)
 
 
-### 3.20 Entidade: MODELO
+### 3.22 Entidade: MODELO
 
 #### Descrição
 Representa o modelo do veículo, incluindo informações de capacidade e fabricante.
@@ -232,7 +252,7 @@ Representa o modelo do veículo, incluindo informações de capacidade e fabrica
 - **capacidade**: Capacidade de transporte (número de passageiros).
 
 
-### 3.21 Entidade: GARAGEM
+### 3.23 Entidade: GARAGEM
 
 #### Descrição
 Local onde os veículos são estacionados, reabastecidos e mantidos.
@@ -259,7 +279,7 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
 
 
 ### 4.2 Relacionamento: CUMPRIDA_POR (entre ESCALA e FUNCIONÁRIO)
-- **Cardinalidade**: M:N <!-- discutir -->  
+- **Cardinalidade**: M:N
   - Uma ESCALA pode ser cumprida por vários FUNCIONÁRIOS, e um FUNCIONÁRIO pode cumprir diversas escalas (dependendo da modelagem exata).
 - **Atributos**: Não possui
 
@@ -297,7 +317,7 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
 
 
 ### 4.8 Relacionamento: COMPÕE (entre LINHA e ROTA)
-- **Cardinalidade**: 1:N <!-- discutir -->  
+- **Cardinalidade**: 1:N  
   - Uma LINHA pode ter múltiplas ROTAS.  
   - Cada ROTA pertence a exatamente uma LINHA.
 - **Atributos**: Não possui
@@ -309,57 +329,51 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
   - Um TRECHO pode ser compartilhado entre rotas distintas.  
 - **Atributos**:
   - ordem: Denota a ordem do TRECHO no percurso da ROTA
-  - 
-
-### 4.10 Relacionamento: PERTENCE_A (entre PARTIDA_PREVISTA e ROTA)
-- **Cardinalidade**: N:1  <!-- discutir -->  
-  - Diversas PARTIDAS_PREVISTAS podem pertencer a uma mesma ROTA (ou linha/itinerário específico).  
-  - Cada PARTIDA_PREVISTA refere-se a apenas uma ROTA.
-- **Atributos**: Não possui
 
 
-### 4.11 Relacionamento: FAZ (entre MOTORISTA e VIAGEM)
+
+### 4.10 Relacionamento: FAZ (entre MOTORISTA e VIAGEM)
 - **Cardinalidade**: 1:N  
   - Um MOTORISTA pode fazer várias VIAGENS (em momentos ou dias distintos).  
   - Cada VIAGEM é feita por exatamente um MOTORISTA.
 - **Atributos**: Não possui
 
 
-### 4.12 Relacionamento: SOFRE (entre VIAGEM e OCORRÊNCIA)
+### 4.11 Relacionamento: SOFRE (entre VIAGEM e OCORRÊNCIA)
 - **Cardinalidade**: 1:N  
   - Uma VIAGEM pode ter várias OCORRÊNCIAS (incidentes, eventos).  
   - Cada OCORRÊNCIA está associada a uma única VIAGEM.
 - **Atributos**: Não possui
 
 
-### 4.13 Relacionamento: TEM (entre USUÁRIO e BILHETE) <!-- discutir Sobre cobrador (pq motorista ou tecnico tbm n poderiam ter bilhete?  -Podem, mas aí teriam como usuários, acho) -->  
+### 4.12 Relacionamento: TEM (entre USUÁRIO e BILHETE_USUARIO)
 - **Cardinalidade**: 1:N  
-  - Um USUÁRIO pode ter vários BILHETES (cartões).  <!-- discutir -->  
+  - Um USUÁRIO pode ter vários BILHETES (cartões).
   - Cada BILHETE pertence a um único USUÁRIO.
 - **Atributos**: Não possui
 
 
-### 4.14 Relacionamento: COBRADOR_TEM (entre COBRADOR e BILHETE)
+### 4.13 Relacionamento: PORTA (entre COBRADOR e BILHETE_COBRADOR)
 - **Cardinalidade**: 1:1  
   - Um COBRADOR tem exatamente um bilhete.  
-  - Um BILHETE que participa desta relação pertence a exatamente 1 COBRADOR. <!-- discutir -->
+  - Um BILHETE que participa desta relação pertence a exatamente 1 COBRADOR.
 - **Atributos**: Não possui
 
 
-### 4.15 Relacionamento: USADO_EM (entre BILHETE e ENTRADA)
+### 4.14 Relacionamento: USADO_EM (entre BILHETE e ENTRADA)
 - **Cardinalidade**: 1:N  
   - Um BILHETE pode ser utilizado muitas vezes, gerando várias ENTRADAS (passagens).  
   - Cada ENTRADA (momento de passagem) está vinculada a exatamente um BILHETE.
 - **Atributos**: Não possui
 
 
-### 4.16 Relacionamento: COMEÇA_EM (entre TRECHO e PONTO)
+### 4.15 Relacionamento: COMEÇA_EM (entre TRECHO e PONTO)
 - **Cardinalidade**: N:1  
   - Um TRECHO tem exatamente um PONTO de início.  
   - um PONTO pode ser parte de vários trechos.
 - **Atributos**: Não possui
 
-### 4.17 Relacionamento: TERMINA_EM (entre TRECHO e PONTO)
+### 4.16 Relacionamento: TERMINA_EM (entre TRECHO e PONTO)
 - **Cardinalidade**: N:1  
   - Um TRECHO tem exatamente um PONTO de término.  
   - um PONTO pode ser parte de vários trechos.
@@ -383,6 +397,11 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
   - **MOTORISTA** (Overlap ou Disjoint, dependendo do modelo de operação da rede): Conduz veículos de transporte  
     - **Atributos adicionais**:  
       - **cod_habilitacao**: Código/registro da habilitação (CNH)
+  
+### 5.3 Generalização: BILHETE (Superclasse)
+- **Especializações**:  
+  - **BILHETE_COBRADOR** (Disjoint): Usado pelo cobrador para autorizar a entrada de usuários sem bilhete próprio 
+  - **BILHETE_USUARIO** (Disjoint): Usado pelos usuários para entradas em viagens
 
 
 ## 6. Restrições Adicionais (não representáveis no diagrama EER)
@@ -396,3 +415,4 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
 7. Manutenções devem ser programadas com base na quilometragem ou no tempo desde a última manutenção.
 8. As coordenadas geográficas de estações devem estar dentro dos limites da área de cobertura do sistema.
 9. O número total de veículos ativos deve ser suficiente para atender à frequência definida para todas as linhas ativas.
+10. Algumas entradas podem ser pagas em dinheiro, ou seja, o usuário não possui cartão. Nesses casos, deve ser registrada uma entrada com o bilhete do cobrador.
