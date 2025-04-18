@@ -1,10 +1,7 @@
 # Etapa 4 – Projeto Lógico do Banco de Dados (Modelo Relacional)
 
-Este documento foi **re‑gerado** a partir do diagrama abaixo (``esquema_relacional_projeto1.png``) e descreve:
-
 1. O **esquema relacional completo** – tabelas, atributos, tipos, chaves, restrições.  
 2. A **análise de normalização** (1FN → BCNF).  
-3. Recomendações de **índices, gatilhos e visões** para uso prático.
 
 ![Diagrama relacional](esquema_relacional_projeto1.png)
 
@@ -17,8 +14,6 @@ Este documento foi **re‑gerado** a partir do diagrama abaixo (``esquema_relaci
 | **(PK)** | chave primária |
 | **(FK)** | chave estrangeira (tipo omitido – usa o da referência) |
 | **(U)**  | restrição de unicidade |
-| `CHECK` | restrição de domínio |
-| `DEFAULT` | valor padrão |
 
 ---
 
@@ -115,9 +110,16 @@ PARTIDA_PREVISTA (
 ```sql
 PONTO (
     cod_ponto  INT PRIMARY KEY,
+<<<<<<< HEAD
     latitude   FLOAT NOT NULL,
     longitude  FLOAT NOT NULL,
     nome       VARCHAR(120)
+=======
+    latitude   FLOAT,
+    longitude  FLOAT,
+    nome       VARCHAR(120),
+    (latitude, longitude) (U)
+>>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
 );
 
 TRECHO (
@@ -143,12 +145,18 @@ PERCORRE (                           -- rota × trecho
 ### 2.7 Frota, Modelos e Garagens
 ```sql
 FABRICANTE (
-    fabricante VARCHAR(60) PRIMARY KEY
+    fabricante VARCHAR(60),
+    cod_modelo (FK)
+    (fabricante, cod_modelo) PRIMARY KEY
 );
 
 MODELO (
     cod_modelo INT PRIMARY KEY,
+<<<<<<< HEAD
     tipo       VARCHAR(30) NOT NULL,
+=======
+    tipo       VARCHAR(30), -- tipo não pode estar relacionado a capacidade
+>>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
     capacidade INT,
     fabricante (FK)
 );
@@ -165,6 +173,7 @@ GARAGEM (
 );
 
 VEICULO (
+<<<<<<< HEAD
     cod_veiculo        INT PRIMARY KEY,
     latitude           FLOAT NOT NULL,
     longitude          FLOAT NOT NULL,
@@ -172,6 +181,15 @@ VEICULO (
     placa              CHAR(7) (U) NOT NULL,
     status             INT NOT NULL,
     ultima_atualizacao TIMESTAMP NOT NULL,
+=======
+    cod_veiculo        INT PRIMARY KEY, -- pq não placa?
+    latitude           FLOAT,
+    longitude          FLOAT,
+    data_inicio_operacao DATE,
+    placa              CHAR(7) (U),
+    status             INT,
+    ultima_atualizacao TIMESTAMP,
+>>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
     cod_garagem        (FK),
     cod_modelo         (FK)
 );
@@ -254,6 +272,7 @@ Neste caso, precisamos observar as dependências funcionais de tabelas com vári
 - **FNBC** – depois de separar `FABRICANTE` de `MODELO`, todo determinante é chave candidata.
 Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo.
 
+<<<<<<< HEAD
 
 | Tabela | Forma normal | Observação principal |
 |--------|--------------|----------------------|
@@ -285,4 +304,6 @@ Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo.
 ## 7. Conclusão
 
 O esquema logicamente derivado do diagrama está **inteiramente em BCNF**, reduzindo redundâncias e anomalias e pronto para implementação em PostgreSQL, MySQL ou Oracle.
+=======
+>>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
 
