@@ -232,24 +232,7 @@ Neste caso, vamos observar as tabelas com chaves primárias compostas.
     - FABRICANTE_MODELO: Todos os atributos compõem a chave e, portanto, não há dependência parcial de um atributo não principal.
 Portanto, o esquema está na 2FN.
 
-- **3FN** – nenhum atributo não‑chave depende de outro não‑chave.
-Neste caso, precisamos observar as dependências funcionais de tabelas com vários atributos não principais.
-    - ESCALA
-    - FUNCIONÁRIO
-    - USUÁRIO
-    - BILHETE
-    - MANUTENÇÃO
-    - VIAGEM
-    - VEICULO
-    - GARAGEM
-    - MODELO
-    - OCORRENCIA 
-    - PERCORRE
-    - TRECHO
-    - PONTO
-    - LINHA
 
-- **FNBC** – depois de separar `FABRICANTE` de `MODELO`, todo determinante é chave candidata.
-Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo.
-
+- **3FN e FNBC**
+Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo. Ao garantir que o esquema está na FNBC, garantimos que está na 3FN e nas formas normais anteriores.
 
