@@ -110,16 +110,10 @@ PARTIDA_PREVISTA (
 ```sql
 PONTO (
     cod_ponto  INT PRIMARY KEY,
-<<<<<<< HEAD
     latitude   FLOAT NOT NULL,
     longitude  FLOAT NOT NULL,
-    nome       VARCHAR(120)
-=======
-    latitude   FLOAT,
-    longitude  FLOAT,
     nome       VARCHAR(120),
     (latitude, longitude) (U)
->>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
 );
 
 TRECHO (
@@ -152,11 +146,7 @@ FABRICANTE (
 
 MODELO (
     cod_modelo INT PRIMARY KEY,
-<<<<<<< HEAD
     tipo       VARCHAR(30) NOT NULL,
-=======
-    tipo       VARCHAR(30), -- tipo não pode estar relacionado a capacidade
->>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
     capacidade INT,
     fabricante (FK)
 );
@@ -173,7 +163,6 @@ GARAGEM (
 );
 
 VEICULO (
-<<<<<<< HEAD
     cod_veiculo        INT PRIMARY KEY,
     latitude           FLOAT NOT NULL,
     longitude          FLOAT NOT NULL,
@@ -181,15 +170,6 @@ VEICULO (
     placa              CHAR(7) (U) NOT NULL,
     status             INT NOT NULL,
     ultima_atualizacao TIMESTAMP NOT NULL,
-=======
-    cod_veiculo        INT PRIMARY KEY, -- pq não placa?
-    latitude           FLOAT,
-    longitude          FLOAT,
-    data_inicio_operacao DATE,
-    placa              CHAR(7) (U),
-    status             INT,
-    ultima_atualizacao TIMESTAMP,
->>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
     cod_garagem        (FK),
     cod_modelo         (FK)
 );
@@ -272,38 +252,4 @@ Neste caso, precisamos observar as dependências funcionais de tabelas com vári
 - **FNBC** – depois de separar `FABRICANTE` de `MODELO`, todo determinante é chave candidata.
 Detalhamos a justificativa sobre a adequação de cada tabela à FNBC abaixo.
 
-<<<<<<< HEAD
-
-| Tabela | Forma normal | Observação principal |
-|--------|--------------|----------------------|
-| ENTIDADES com PK simples | BCNF | somente dependências triviais |
-| ASSOCIAÇÕES (PK composta) | BCNF | não há atributos extras fora da PK |
-| MODELO | BCNF | `cod_modelo` → resto |
-| FABRICANTE | BCNF | atributo único |
-
----
-
-## 4. Índices Recomendados
-
-1. Índice em **todas as FKs** ↔ velocidade de junções.  
-2. `VEICULO(placa)` (já UNIQUE).  
-3. `BILHETE(cpf)` e `ENTRADA(horario)`.  
-4. Índices espaciais em `PONTO(latitude, longitude)` se o SGBD suportar GIS.  
-5. `(cod_veiculo, datahora_inicio)` já é PK de **VIAGEM**, serve como índice primário.
-
----
-
-## 6. Visões Úteis
-
-1. **View_ViagemCompleta** – une viagem + rota + linha + motorista + veículo.  
-2. **View_ManutencaoHistorico** – histórico por veículo.  
-3. **View_OcorrenciasDia** – todas as ocorrências dentro de um intervalo.
-
----
-
-## 7. Conclusão
-
-O esquema logicamente derivado do diagrama está **inteiramente em BCNF**, reduzindo redundâncias e anomalias e pronto para implementação em PostgreSQL, MySQL ou Oracle.
-=======
->>>>>>> a85743364fa04ef3d86943ef2f17410f379c9e97
 

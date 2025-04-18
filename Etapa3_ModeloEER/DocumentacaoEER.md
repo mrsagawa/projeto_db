@@ -390,7 +390,9 @@ Local onde os veículos são estacionados, reabastecidos e mantidos.
 1. Um ponto terminal deve ter pelo menos 2 rotas associadas (ida e volta da mesma linha).
 2. O tempo médio de percurso de uma linha deve ser coerente com a soma dos tempos médios de seus trechos.
 3. Bilhetes de integração têm um limite máximo de tempo entre a primeira e a última utilização.
-4. Operadores não podem ser escalados para viagens consecutivas sem um intervalo mínimo de descanso.
-5. Manutenções preventivas devem ser programadas com base na quilometragem ou no tempo desde a última manutenção.
-6. As coordenadas geográficas de estações devem estar dentro dos limites da área de cobertura do sistema.
-7. O número total de veículos ativos deve ser suficiente para atender à frequência definida para todas as linhas ativas.
+4. O horário de término de uma viagem deve ser posterior ao início.
+5. Uma entrada só pode ser realizada em uma viagem que foi iniciada e não foi terminada ainda.
+6. Operadores não devem ser escalados para viagens consecutivas sem um intervalo mínimo de descanso.
+7. Manutenções devem ser programadas com base na quilometragem ou no tempo desde a última manutenção.
+8. As coordenadas geográficas de estações devem estar dentro dos limites da área de cobertura do sistema.
+9. O número total de veículos ativos deve ser suficiente para atender à frequência definida para todas as linhas ativas.
