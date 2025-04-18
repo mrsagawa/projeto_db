@@ -1,10 +1,7 @@
 # Etapa 4 – Projeto Lógico do Banco de Dados (Modelo Relacional)
 
-Este documento foi **re‑gerado** a partir do diagrama abaixo (``esquema_relacional_projeto1.png``) e descreve:
-
 1. O **esquema relacional completo** – tabelas, atributos, tipos, chaves, restrições.  
 2. A **análise de normalização** (1FN → BCNF).  
-3. Recomendações de **índices, gatilhos e visões** para uso prático.
 
 ![Diagrama relacional](esquema_relacional_projeto1.png)
 
@@ -17,8 +14,6 @@ Este documento foi **re‑gerado** a partir do diagrama abaixo (``esquema_relaci
 | **(PK)** | chave primária |
 | **(FK)** | chave estrangeira (tipo omitido – usa o da referência) |
 | **(U)**  | restrição de unicidade |
-| `CHECK` | restrição de domínio |
-| `DEFAULT` | valor padrão |
 
 ---
 
@@ -117,7 +112,8 @@ PONTO (
     cod_ponto  INT PRIMARY KEY,
     latitude   FLOAT,
     longitude  FLOAT,
-    nome       VARCHAR(120)
+    nome       VARCHAR(120),
+    (latitude, longitude) (U)
 );
 
 TRECHO (
@@ -143,12 +139,14 @@ PERCORRE (                           -- rota × trecho
 ### 2.7 Frota, Modelos e Garagens
 ```sql
 FABRICANTE (
-    fabricante VARCHAR(60) PRIMARY KEY
+    fabricante VARCHAR(60),
+    cod_modelo (FK)
+    (fabricante, cod_modelo) PRIMARY KEY
 );
 
 MODELO (
     cod_modelo INT PRIMARY KEY,
-    tipo       VARCHAR(30),
+    tipo       VARCHAR(30), -- tipo não pode estar relacionado a capacidade
     capacidade INT,
     fabricante (FK)
 );
@@ -165,7 +163,7 @@ GARAGEM (
 );
 
 VEICULO (
-    cod_veiculo        INT PRIMARY KEY,
+    cod_veiculo        INT PRIMARY KEY, -- pq não placa?
     latitude           FLOAT,
     longitude          FLOAT,
     data_inicio_operacao DATE,
@@ -220,39 +218,4 @@ ENTRADA (
 
 ## 3. Normalização (até BCNF)
 
-- **1FN** – todos os atributos são atômicos e não repetitivos.  
-- **2FN** – nenhuma coluna não‑chave depende somente de parte de uma PK composta.  
-- **3FN** – nenhum atributo não‑chave depende de outro não‑chave.  
-- **BCNF** – depois de separar `FABRICANTE` de `MODELO`, todo determinante é chave candidata.
-
-| Tabela | Forma normal | Observação principal |
-|--------|--------------|----------------------|
-| ENTIDADES com PK simples | BCNF | somente dependências triviais |
-| ASSOCIAÇÕES (PK composta) | BCNF | não há atributos extras fora da PK |
-| MODELO | BCNF | `cod_modelo` → resto |
-| FABRICANTE | BCNF | atributo único |
-
----
-
-## 4. Índices Recomendados
-
-1. Índice em **todas as FKs** ↔ velocidade de junções.  
-2. `VEICULO(placa)` (já UNIQUE).  
-3. `BILHETE(cpf)` e `ENTRADA(horario)`.  
-4. Índices espaciais em `PONTO(latitude, longitude)` se o SGBD suportar GIS.  
-5. `(cod_veiculo, datahora_inicio)` já é PK de **VIAGEM**, serve como índice primário.
-
----
-
-## 6. Visões Úteis
-
-1. **View_ViagemCompleta** – une viagem + rota + linha + motorista + veículo.  
-2. **View_ManutencaoHistorico** – histórico por veículo.  
-3. **View_OcorrenciasDia** – todas as ocorrências dentro de um intervalo.
-
----
-
-## 7. Conclusão
-
-O esquema logicamente derivado do diagrama está **inteiramente em BCNF**, reduzindo redundâncias e anomalias e pronto para implementação em PostgreSQL, MySQL ou Oracle.
 
