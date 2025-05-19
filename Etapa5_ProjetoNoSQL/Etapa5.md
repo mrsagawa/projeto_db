@@ -1,3 +1,5 @@
+# Etapa 5 - Projeto de um banco de dados NoSQL para a aplicação
+
 ** Escolha do tipo Documentos **
 
 Para esta etapa do projeto, optamos por utilizar um banco de dados NoSQL baseado em documentos. Essa escolha foi feita com base na análise dos requisitos funcionais e operacionais definidos nas etapas anteriores e na notação abordada em aula, voltada à representação de dados semiestruturados (JSON/árvore).
@@ -22,10 +24,13 @@ Dessa forma, o uso de um banco de documentos proporciona:
 - Eficiência no armazenamento e acesso a dados aninhados;
 - Aderência à modelagem orientada ao domínio do problema.
 
+
+![image]("esquema_nosql.png")
+
 Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL mais adequada para esta aplicação.
 
 1. Coleção funcionários <!-- legal -->
-
+```
 <funcionário>
 	<cpf></cpf>
 	<nome></nome>
@@ -46,10 +51,10 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
         <nome></nome>
     </empresa>
 </funcionário>
-
+```
 
 2. Coleção pontos <!-- legal -->
-
+```
 <ponto>
 	<cod_ponto></cod_ponto>
 	<nome></nome>
@@ -58,10 +63,10 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 		<lon></lon>
     </coordenada>
 </ponto>
-
+```
 
 3. Coleção trechos <!-- legal -->
-
+```
 <trecho>
 	<id_trecho></id_trecho>
 	<ponto_1></ponto_1>
@@ -70,10 +75,10 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
     <tempo_medio></tempo_medio>
     <geometria></geometria>
 </trecho>
-
+```
 
 4. Coleção Linhas <!-- legal -->
-
+```
 <linha>
 	<cod_linha></cod_linha>
 	<nome_linha></nome_linha>
@@ -91,10 +96,10 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 	    </rota>
     </rotas>
 </linha>
-
+```
 
 5. Coleção Bilhete
-
+```
 <bilhete>
 	<cod_cartao></cod_cartao>
 	<saldo></saldo>  <!-- Modificações frequentes -->
@@ -107,14 +112,14 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 		<nome></nome>
 	</usuário>
 </bilhete>
-
+```
 <!-- Saldo é um atributo frequentemente alterado (desconto por viagem) de forma que cada atualização no saldo obriga o documento interiro ser regravado, de forma que problemas com desempeho ou integridade possam surgir quando multiplos usuários tentam acessar o DB simultaneamente. Duas alternativas me vem em mente:
 1. Como existe um número máximo de catracas (n), espera-se que a quantidade máxima de acesso sejam n.
 2. Criar um FILA que registra temporiramente os cartões passados em um intervalo de tempo, que posteriormente seja computado no DB. Dessa forma, as atualizações de saldo de cada bilhete sejam recalculada em um fluxo controlado, evitando assim qualquer problema. -->
 
 
 6. Coleção Garagem <!-- legal -->
-
+```
 <garagem>
 	<cod_garagem></cod_garagem>
 	<num_eletropostos></num_eletropostos>
@@ -130,10 +135,10 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 		<veículo></veículo>
 </veículos>
 </garagem>
-
+```
 
 7. Coleção veículos 
-
+```
 <veículo>
 	<localização>
 		<lat></lat>
@@ -151,11 +156,12 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 			<descrição></descrição>
 		</manutenção>
 	</manutenções>
-</veículo>	
+</veículo>
+```
 <!--  Separar veiculo de manutenção. Pra mim faz mais sentido ter uma coleção de manutenção por dois pontos: Registrar historico de manutenção e permite escalabilidade das manutenções prestadas -->
 
 8. Coleção modelos
-
+```
 <modelo>
 <cod_modelo></cod_modelo>
 	<tipo></tipo>
@@ -164,11 +170,11 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 		<fabricante></fabricante>
 	</fabricantes>
 </modelo>
-
+```
 <!-- Acho que faz mais sentido juntar modelo e fabricante com veículo-->
 
 9. Coleção viagens <!-- legal -->
-
+```
 <viagem>
 	<cod_veiculo></cod_veiculo>
 	<cpf_motorista></cpf_motorista>
@@ -191,6 +197,7 @@ Por esses motivos, o modelo de documentos foi escolhido como a solução NoSQL m
 	</entrada>
 </entradas>
 </viagem>
+```
 
 As coleções: `pontos`, `trechos` e `garagem` foram mantidas normalizadas assim como no modelo relacional. Esta medida foi adotada para facilitar consultas independenteas à estas entidades e permitir mais escalabilidade, manutenção e flexibilidade na evolução do banco de dados.
 
