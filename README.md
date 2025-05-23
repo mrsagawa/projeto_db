@@ -18,21 +18,16 @@ O repositório está organizado nas seguintes pastas, correspondentes às etapas
 
 ### Etapa 3 - Projeto Conceitual (Modelo EER)
 - `Etapa3_ModeloEER/DocumentacaoEER.md` - Documentação do modelo conceitual EER
-- `Etapa3_ModeloEER/DiagramaEER.png` - Diagrama do modelo conceitual (referenciado no documento)
+- `Etapa3_ModeloEER/esquema_entidade_relacionamento_projeto1.png` - Diagrama do modelo conceitual (referenciado no documento)
+- `Etapa3_ModeloEER/EER DB Projeto 1.erdplus` - Diagrama do modelo conceitual feito no ERDplus
 
 ### Etapa 4 - Projeto Lógico (Modelo Relacional)
 - `Etapa4_ModeloRelacional/DocumentacaoRelacional.md` - Documentação do modelo lógico relacional
-- `Etapa4_ModeloRelacional/DiagramaRelacional.png` - Diagrama do modelo relacional (referenciado no documento)
+- `Etapa4_ModeloRelacional/esquema_relacional_projeto1.png` - Diagrama do modelo relacional (referenciado no documento)
 
 ### Etapa 5 - Projeto de Banco de Dados NoSQL
-- `Etapa5_ModeloNoSQL/DocumentacaoNoSQL.md` - Documentação principal do modelo NoSQL
-- `Etapa5_ModeloNoSQL/DiagramaNoSQL.md` - Representação visual da estrutura de documentos
-- `Etapa5_ModeloNoSQL/ExemplosDados.json` - Exemplos de documentos e consultas
-- `Etapa5_ModeloNoSQL/ImplementacaoMongoDB.md` - Guia de implementação com MongoDB
-- `Etapa5_ModeloNoSQL/ConsultasAvancadas.md` - Exemplos de consultas avançadas para cenários comuns
-- `Etapa5_ModeloNoSQL/IntegracaoAplicacao.md` - Guia de integração da aplicação com o BD NoSQL
-- `Etapa5_ModeloNoSQL/AnaliseComparativa.md` - Análise comparativa entre os modelos relacional e NoSQL
-- `Etapa5_ModeloNoSQL/EstrategiaMigracao.md` - Estratégia de migração do relacional para NoSQL
+- `Etapa5_ProjetoNoSQL/Etapa5.md` - Documentação principal do modelo NoSQL
+- `Etapa5_ProjetoNoSQL/esquema_nosql.png` - Diagrama do modelo de Documentos NoSQL
 
 ## Resumo das Etapas do Projeto
 
@@ -61,37 +56,9 @@ Para entender completamente o projeto, recomendamos seguir a sequência das etap
 4. Estude o modelo lógico relacional na Etapa 4
 5. Explore a alternativa NoSQL na Etapa 5
 
-### Para a Etapa 5 (NoSQL), sugerimos a seguinte ordem de leitura:
-
-1. `DocumentacaoNoSQL.md` - Entendimento geral do modelo NoSQL
-2. `DiagramaNoSQL.md` - Visualização da estrutura de documentos
-3. `AnaliseComparativa.md` - Comparação entre os modelos relacional e NoSQL
-4. `ExemplosDados.json` - Exemplos concretos de documentos
-5. `ConsultasAvancadas.md` - Exemplos de consultas para cenários reais
-6. `ImplementacaoMongoDB.md` - Aspectos práticos de implementação
-7. `IntegracaoAplicacao.md` - Como integrar a aplicação ao banco NoSQL
-8. `EstrategiaMigracao.md` - Como realizar a migração do relacional para NoSQL
-
-## Justificativa da Escolha do Modelo NoSQL
-
-O modelo NoSQL orientado a documentos (MongoDB) foi escolhido como alternativa ao modelo relacional pelos seguintes motivos principais:
-
-1. **Natureza Hierárquica dos Dados**: Os dados de transporte público apresentam hierarquias naturais (linha → rota → estações) que são melhor representadas em documentos aninhados.
-
-2. **Flexibilidade para Evolução**: O esquema flexível permite adicionar novos campos ou modificar a estrutura de documentos sem impacto no sistema como um todo.
-
-3. **Performance em Consultas Frequentes**: A estrutura de documentos aninhados elimina a necessidade de junções complexas para as operações mais comuns.
-
-4. **Suporte Nativo a Dados Geoespaciais**: Essencial para consultas baseadas em localização, distância e área em um sistema de transporte público.
-
-5. **Escalabilidade Horizontal**: Facilidade de distribuição do banco em múltiplos servidores para lidar com crescimento contínuo do volume de dados.
-
-Para uma análise detalhada, consulte o documento `AnaliseComparativa.md` na pasta da Etapa 5.
-
 ## Autores
 
-- [Nome do Integrante 1]
-- [Nome do Integrante 2]
-- [Nome do Integrante 3]
-- [Nome do Integrante 4]
+- Guilherme Yudi Aiabe Sagawa - Nusp: 11225676
+- Pedro Rezende Mendonça - Nusp: 8961491
+
 # DB_TransportePublico
