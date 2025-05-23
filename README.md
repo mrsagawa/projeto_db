@@ -60,5 +60,3 @@ Para entender completamente o projeto, recomendamos seguir a sequência das etap
 
 - Guilherme Yudi Aiabe Sagawa - Nusp: 11225676
 - Pedro Rezende Mendonça - Nusp: 8961491
-
-# DB_TransportePublico
